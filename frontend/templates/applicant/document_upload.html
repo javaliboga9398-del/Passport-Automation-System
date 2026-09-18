@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Documents — Passport Automation System{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 920px;">
+  
+  <ul class="breadcrumb">
+    <li><a href="{{ url_for('applicant.dashboard') }}"><i class="fas fa-home"></i> Dashboard</a></li>
+    <li class="breadcrumb-separator">/</li>
+    <li><a href="{{ url_for('applicant.form_wizard', app_id=app.id, step=5) }}">Application Form</a></li>
+    <li class="breadcrumb-separator">/</li>
+    <li>Document Upload</li>
+  </ul>
+
+  <!-- Header Banner -->
+  <div style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+    <div>
+      <h2 style="font-size: 24px; color: var(--primary-900);">Required Supporting Documents</h2>
+      <p style="font-size: 13px; color: var(--slate-600); margin-top: 4px;">
+        Upload legible digital copies of your proof documents. Allowed formats: PDF, JPG, JPEG, PNG (Max 5MB each).
+      </p>
+    </div>
+    <div>
+      <a href="{{ url_for('applicant.application_review', app_id=app.id) }}" class="btn btn-primary">
+        Review Application <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 28px;">
+    
+    <!-- Upload Dropzone Card -->
+    <div class="card">
+      <div class="card-header">
+        <h3><i class="fas fa-cloud-upload-alt" style="color: var(--primary-600);"></i> Upload Document</h3>
+      </div>
+      <div class="card-body">
+        <form action="{{ url_for('applicant.document_upload', app_id=app.id) }}" method="POST" enctype="multipart/form-data">
+          
+          <div class="form-group">
+            <label class="form-label" for="doc_type">Document Category <span class="required">*</span></label>
+            <select name="doc_type" id="doc_type" class="form-select" required>
+              <option value="">-- Select Document Category --</option>
+              {% for cat in categories %}
+                <option value="{{ cat }}">{{ cat }} {% if cat in ['Identity Proof', 'Address Proof', 'Photograph'] %}(Mandatory){% endif %}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Drag and Drop Box -->
+          <div class="upload-dropzone" id="upload_dropzone">
+            <i class="fas fa-file-upload upload-icon"></i>
+            <h4 style="font-size: 14px; margin-bottom: 4px; color: var(--slate-800);">Click or drag file here to upload</h4>
+            <p style="font-size: 12px; color: var(--slate-500);">Supported: PDF, JPG, JPEG, PNG (up to 5MB)</p>
+            <input type="file" name="file" id="doc_file_input" style="display: none;" accept=".pdf,.jpg,.jpeg,.png" required>
+          </div>
+
+          <div id="selected_file_info" style="display: none; background: var(--primary-50); border: 1px solid #bfdbfe; border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px; color: var(--primary-800); margin-bottom: 18px;">
+            <i class="fas fa-paperclip" style="margin-right: 6px;"></i> <span id="file_name_display"></span>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%;">
+            <i class="fas fa-upload"></i> Upload & Attach Document
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Uploaded Documents Checklist & Status -->
+    <div class="card">
+      <div class="card-header">
+        <h3>
+          <i class="fas fa-tasks" style="color: var(--primary-600);"></i> Uploaded Documents 
+          <span style="font-size: 12px; font-weight: 500; color: var(--slate-500); margin-left: 6px;">({{ documents|length }} files)</span>
+        </h3>
+      </div>
+      <div class="card-body" style="padding: 16px;">
+        
+        {% if documents %}
+          <div class="doc-card-list">
+            {% for doc in documents %}
+              <div class="doc-item-card">
+                <div class="doc-info">
+                  <div class="doc-icon">
+                    <i class="fas {% if doc.is_image %}fa-file-image{% else %}fa-file-pdf{% endif %}"></i>
+                  </div>
+                  <div class="doc-details">
+                    <h5>{{ doc.doc_type }}</h5>
+                    <div class="doc-meta">
+                      {{ doc.original_filename }} &bull; {{ doc.formatted_size }} &bull; {{ doc.uploaded_at.strftime('%d %b %Y') }}
+                    </div>
+                    {% if doc.rejection_reason %}
+                      <div style="font-size: 11px; color: var(--danger-600); margin-top: 4px; font-weight: 600;">
+                        <i class="fas fa-exclamation-circle"></i> Reason: {{ doc.rejection_reason }}
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="doc-actions">
+                  <span class="badge {% if doc.verification_status == 'Verified' %}badge-success{% elif doc.verification_status == 'Rejected' %}badge-danger{% else %}badge-info{% endif %}">
+                    {{ doc.verification_status }}
+                  </span>
+
+                  <!-- Preview Button -->
+                  <button type="button" class="btn btn-secondary btn-sm" onclick="previewDocument('{{ url_for('uploaded_file', filename=doc.stored_filename) }}', '{{ doc.original_filename }}', '{{ doc.mime_type }}')" title="Preview Document">
+                    <i class="fas fa-eye"></i>
+                  </button>
+
+                  <!-- Delete Button -->
+                  {% if app.status in ['Draft', 'Returned for Correction'] %}
+                    <form action="{{ url_for('applicant.delete_document', doc_id=doc.id) }}" method="POST" onsubmit="return confirm('Delete this uploaded document?');">
+                      <button type="submit" class="btn btn-danger btn-sm" title="Delete Document">
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
+                    </form>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div style="text-align: center; padding: 36px 12px; color: var(--slate-400);">
+            <i class="fas fa-folder-plus" style="font-size: 32px; margin-bottom: 8px; display: block;"></i>
+            No documents uploaded yet. Please upload your Identity Proof, Address Proof, and Photograph.
+          </div>
+        {% endif %}
+
+        <!-- Mandatory Documents Checklist Notice -->
+        <div style="margin-top: 20px; background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-sm); padding: 14px;">
+          <div style="font-size: 12px; font-weight: 700; color: var(--slate-700); text-transform: uppercase; margin-bottom: 8px;">
+            Mandatory Documents Checklist:
+          </div>
+          <div style="font-size: 12px; color: var(--slate-600); display: flex; flex-direction: column; gap: 4px;">
+            <div>
+              <i class="fas {% if 'Identity Proof' in documents|map(attribute='doc_type')|list %}fa-check-circle text-success{% else %}fa-circle text-muted{% endif %}" style="color: {% if 'Identity Proof' in documents|map(attribute='doc_type')|list %}var(--success-600){% else %}var(--slate-400){% endif %}; margin-right: 6px;"></i> Identity Proof (Aadhaar / PAN / Voter ID)
+            </div>
+            <div>
+              <i class="fas {% if 'Address Proof' in documents|map(attribute='doc_type')|list %}fa-check-circle text-success{% else %}fa-circle text-muted{% endif %}" style="color: {% if 'Address Proof' in documents|map(attribute='doc_type')|list %}var(--success-600){% else %}var(--slate-400){% endif %}; margin-right: 6px;"></i> Address Proof (Utility Bill / Rent Agreement)
+            </div>
+            <div>
+              <i class="fas {% if 'Photograph' in documents|map(attribute='doc_type')|list %}fa-check-circle text-success{% else %}fa-circle text-muted{% endif %}" style="color: {% if 'Photograph' in documents|map(attribute='doc_type')|list %}var(--success-600){% else %}var(--slate-400){% endif %}; margin-right: 6px;"></i> Recent Passport Size Photograph
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <div style="margin-top: 24px; display: flex; justify-content: space-between; align-items: center;">
+    <a href="{{ url_for('applicant.form_wizard', app_id=app.id, step=5) }}" class="btn btn-secondary">
+      <i class="fas fa-arrow-left"></i> Back to Declaration
+    </a>
+    <a href="{{ url_for('applicant.application_review', app_id=app.id) }}" class="btn btn-primary btn-lg">
+      Proceed to Application Review <i class="fas fa-arrow-right"></i>
+    </a>
+  </div>
+
+</div>
+
+<!-- Document Preview Modal Dialog -->
+<div class="modal-overlay" id="doc_preview_modal">
+  <div class="modal-dialog" style="max-width: 700px;">
+    <div class="modal-header">
+      <h4 id="preview_modal_title">Document Preview</h4>
+      <button type="button" class="modal-close" onclick="closeModal('doc_preview_modal')">&times;</button>
+    </div>
+    <div class="modal-body" id="preview_content" style="padding: 16px;">
+      <!-- Content populated by JavaScript -->
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" onclick="closeModal('doc_preview_modal')">Close Preview</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+{% endblock %}

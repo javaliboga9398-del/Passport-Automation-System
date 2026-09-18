@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications Management — Admin{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+  
+  {% include 'components/sidebar.html' %}
+
+  <main class="admin-content">
+    
+    <div style="margin-bottom: 24px;">
+      <h1 style="font-size: 24px; color: var(--slate-900);">Notification Dispatch & Broadcasting</h1>
+      <p style="font-size: 13px; color: var(--slate-500); margin-top: 2px;">
+        Issue targeted citizen announcements, PSK holiday alerts, or application advisories
+      </p>
+    </div>
+
+    <!-- Dispatch Form Card -->
+    <div class="card" style="margin-bottom: 28px;">
+      <div class="card-header">
+        <h3><i class="fas fa-bullhorn" style="color: var(--primary-600);"></i> Send In-App Notification</h3>
+      </div>
+      <div class="card-body" style="padding: 24px;">
+        <form action="{{ url_for('officer.notifications_mgmt') }}" method="POST">
+          
+          <div class="form-row">
+            <div class="form-group" style="flex: 1.5;">
+              <label class="form-label">Target Recipient <span class="required">*</span></label>
+              <select name="recipient_type" class="form-select" required>
+                <option value="all">Broadcast to All Citizens ({{ applicants|length }} Users)</option>
+                {% for a in applicants %}
+                  <option value="{{ a.id }}">Individual: {{ a.full_name }} ({{ a.email }})</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="form-group" style="flex: 1;">
+              <label class="form-label">Notification Style / Severity</label>
+              <select name="type" class="form-select">
+                <option value="info">Information (Blue)</option>
+                <option value="success">Success / Clearance (Green)</option>
+                <option value="warning">Warning / Action Needed (Amber)</option>
+                <option value="danger">Urgent / Alert (Red)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Notification Title <span class="required">*</span></label>
+            <input type="text" name="title" class="form-control" placeholder="e.g. PSK Central Branch Holiday Notice" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Notification Message <span class="required">*</span></label>
+            <textarea name="message" class="form-control" rows="3" placeholder="Provide clear instructions or operational alerts for applicants..." required></textarea>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end;">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-paper-plane"></i> Dispatch Notification
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- Sent Notifications Log Table -->
+    <div class="card">
+      <div class="card-header">
+        <h3><i class="fas fa-history" style="color: var(--primary-600);"></i> Recent Sent Notifications</h3>
+      </div>
+      <div class="card-body" style="padding: 0;">
+        {% if notifications %}
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Recipient User</th>
+                  <th>Title & Content</th>
+                  <th>Type</th>
+                  <th>Read Status</th>
+                  <th>Sent At</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for n in notifications %}
+                  <tr>
+                    <td>
+                      <strong>{{ n.user.full_name if n.user else 'All' }}</strong>
+                      <div style="font-size: 11px; color: var(--slate-500);">{{ n.user.email if n.user else '' }}</div>
+                    </td>
+                    <td>
+                      <div style="font-weight: 600; color: var(--slate-800);">{{ n.title }}</div>
+                      <div style="font-size: 12px; color: var(--slate-600); margin-top: 2px;">{{ n.message }}</div>
+                    </td>
+                    <td>
+                      <span class="badge {% if n.type == 'success' %}badge-success{% elif n.type == 'danger' %}badge-danger{% elif n.type == 'warning' %}badge-warning{% else %}badge-info{% endif %}">
+                        {{ n.type|capitalize }}
+                      </span>
+                    </td>
+                    <td>
+                      {% if n.is_read %}
+                        <span style="color: var(--success-600); font-size: 12px;"><i class="fas fa-check-double"></i> Read</span>
+                      {% else %}
+                        <span style="color: var(--slate-400); font-size: 12px;"><i class="fas fa-clock"></i> Unread</span>
+                      {% endif %}
+                    </td>
+                    <td style="font-size: 12px; color: var(--slate-500);">
+                      {{ n.created_at.strftime('%d %b %Y, %H:%M') }}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+  </main>
+
+</div>
+{% endblock %}

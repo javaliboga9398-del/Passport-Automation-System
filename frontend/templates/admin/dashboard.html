@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}Officer Dashboard — Passport Automation System{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+  
+  {% include 'components/sidebar.html' %}
+
+  <main class="admin-content">
+    
+    <!-- Top Welcome Header -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; flex-wrap: wrap; gap: 14px;">
+      <div>
+        <h1 style="font-size: 24px; color: var(--slate-900);">Passport Authority Command Dashboard</h1>
+        <p style="font-size: 13px; color: var(--slate-500); margin-top: 2px;">
+          Operational overview for Senior Verification Officers and System Administrators
+        </p>
+      </div>
+      <div>
+        <a href="{{ url_for('officer.applications') }}?status=Submitted" class="btn btn-primary">
+          <i class="fas fa-search"></i> Inspect Pending Applications
+        </a>
+      </div>
+    </div>
+
+    <!-- Metric Stat Cards -->
+    <div class="stat-card-grid">
+      <div class="stat-card">
+        <div class="stat-icon blue"><i class="fas fa-users"></i></div>
+        <div class="stat-info">
+          <h4>Total Applicants</h4>
+          <div class="stat-number">{{ total_applicants }}</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon purple"><i class="fas fa-folder"></i></div>
+        <div class="stat-info">
+          <h4>Total Applications</h4>
+          <div class="stat-number">{{ total_applications }}</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon amber"><i class="fas fa-hourglass-half"></i></div>
+        <div class="stat-info">
+          <h4>Pending Verification</h4>
+          <div class="stat-number">{{ pending_verification }}</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+        <div class="stat-info">
+          <h4>Approved</h4>
+          <div class="stat-number">{{ approved_count }}</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon red"><i class="fas fa-times-circle"></i></div>
+        <div class="stat-info">
+          <h4>Rejected</h4>
+          <div class="stat-number">{{ rejected_count }}</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon blue"><i class="fas fa-calendar-day"></i></div>
+        <div class="stat-info">
+          <h4>Appointments Today</h4>
+          <div class="stat-number">{{ today_appointments }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Visual Application Distribution Bar -->
+    <div class="card" style="margin-bottom: 28px;">
+      <div class="card-header">
+        <h3><i class="fas fa-chart-bar" style="color: var(--primary-600);"></i> Application Status Distribution</h3>
+      </div>
+      <div class="card-body" style="padding: 20px 24px;">
+        {% set total_act = total_applications if total_applications > 0 else 1 %}
+        {% set pct_sub = (status_counts.get('Submitted', 0) / total_act * 100)|round(1) %}
+        {% set pct_ver = (status_counts.get('Under Verification', 0) / total_act * 100)|round(1) %}
+        {% set pct_app = (status_counts.get('Approved', 0) / total_act * 100)|round(1) %}
+        {% set pct_dsp = (status_counts.get('Dispatched', 0) / total_act * 100)|round(1) %}
+        {% set pct_rej = (status_counts.get('Rejected', 0) / total_act * 100)|round(1) %}
+
+        <div class="distribution-bar">
+          <div class="dist-slice dist-submitted" style="width: {{ pct_sub }}%;" title="Submitted: {{ status_counts.get('Submitted', 0) }}"></div>
+          <div class="dist-slice dist-verification" style="width: {{ pct_ver }}%;" title="Under Verification: {{ status_counts.get('Under Verification', 0) }}"></div>
+          <div class="dist-slice dist-approved" style="width: {{ pct_app }}%;" title="Approved: {{ status_counts.get('Approved', 0) }}"></div>
+          <div class="dist-slice dist-dispatched" style="width: {{ pct_dsp }}%;" title="Dispatched: {{ status_counts.get('Dispatched', 0) }}"></div>
+          <div class="dist-slice dist-rejected" style="width: {{ pct_rej }}%;" title="Rejected: {{ status_counts.get('Rejected', 0) }}"></div>
+        </div>
+
+        <div class="dist-legend">
+          <div class="dist-item"><div class="dist-dot dist-submitted"></div> Submitted ({{ status_counts.get('Submitted', 0) }})</div>
+          <div class="dist-item"><div class="dist-dot dist-verification"></div> Under Verification ({{ status_counts.get('Under Verification', 0) }})</div>
+          <div class="dist-item"><div class="dist-dot dist-approved"></div> Approved ({{ status_counts.get('Approved', 0) }})</div>
+          <div class="dist-item"><div class="dist-dot dist-dispatched"></div> Dispatched ({{ status_counts.get('Dispatched', 0) }})</div>
+          <div class="dist-item"><div class="dist-dot dist-rejected"></div> Rejected ({{ status_counts.get('Rejected', 0) }})</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 Column Section: Urgent Applications & Upcoming Appointments -->
+    <div style="display: grid; grid-template-columns: 1.3fr 1fr; gap: 28px;">
+      
+      <!-- Urgent Applications Requiring Verification -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-exclamation-circle" style="color: var(--warning-600);"></i> Pending Document Verification</h3>
+          <a href="{{ url_for('officer.applications') }}?status=Submitted" class="btn btn-outline btn-sm">View All</a>
+        </div>
+        <div class="card-body" style="padding: 0;">
+          {% if urgent_applications %}
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Application ID</th>
+                    <th>Applicant Name</th>
+                    <th>Scheme</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for a in urgent_applications %}
+                    <tr>
+                      <td><code>{{ a.application_number }}</code></td>
+                      <td style="font-weight: 600;">{{ a.full_name }}</td>
+                      <td>
+                        <span class="badge {% if a.application_type == 'Tatkaal' %}badge-danger{% else %}badge-info{% endif %}">
+                          {{ a.application_type }}
+                        </span>
+                      </td>
+                      <td>
+                        <span class="badge badge-warning">{{ a.status }}</span>
+                      </td>
+                      <td>
+                        <a href="{{ url_for('officer.verification', app_id=a.id) }}" class="btn btn-primary btn-sm">
+                          <i class="fas fa-check-double"></i> Verify
+                        </a>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div style="text-align: center; padding: 40px 16px; color: var(--slate-400);">
+              <i class="fas fa-check-circle" style="font-size: 32px; color: var(--success-500); margin-bottom: 8px; display: block;"></i>
+              No pending applications requiring verification right now!
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Upcoming PSK Appointments -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-calendar-alt" style="color: var(--primary-600);"></i> Upcoming Appointments</h3>
+          <a href="{{ url_for('officer.appointments') }}" class="btn btn-outline btn-sm">Full Schedule</a>
+        </div>
+        <div class="card-body" style="padding: 0;">
+          {% if upcoming_appointments %}
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Token / App ID</th>
+                    <th>Date & Time</th>
+                    <th>Applicant</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for apt in upcoming_appointments %}
+                    <tr>
+                      <td>
+                        <code>{{ apt.appointment_number }}</code>
+                        <div style="font-size: 11px; color: var(--slate-500);">{{ apt.application.application_number }}</div>
+                      </td>
+                      <td>
+                        <div style="font-weight: 600; font-size: 13px;">{{ apt.appointment_date.strftime('%d %b %Y') }}</div>
+                        <div style="font-size: 11px; color: var(--slate-500);">{{ apt.appointment_time }}</div>
+                      </td>
+                      <td style="font-size: 13px; font-weight: 500;">
+                        {{ apt.application.full_name }}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div style="text-align: center; padding: 40px 16px; color: var(--slate-400);">
+              No appointments scheduled for upcoming dates.
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
+{% endblock %}

@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+
+{% block title %}Application Verification — {{ app.application_number }} — Admin{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+  
+  {% include 'components/sidebar.html' %}
+
+  <main class="admin-content">
+    
+    <ul class="breadcrumb no-print">
+      <li><a href="{{ url_for('officer.dashboard') }}"><i class="fas fa-home"></i> Admin</a></li>
+      <li class="breadcrumb-separator">/</li>
+      <li><a href="{{ url_for('officer.applications') }}">Applications</a></li>
+      <li class="breadcrumb-separator">/</li>
+      <li>Verification Station</li>
+    </ul>
+
+    <!-- Top Station Header -->
+    <div style="background: var(--surface-white); border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 24px 28px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+      <div>
+        <span style="font-size: 11px; font-weight: 700; color: var(--primary-600); text-transform: uppercase;">Officer Inspection Workstation</span>
+        <h2 style="font-size: 22px; color: var(--primary-900); margin: 2px 0;">
+          {{ app.application_number }} &bull; {{ app.full_name }}
+        </h2>
+        <p style="font-size: 13px; color: var(--slate-500); margin: 0;">
+          Service: {{ app.service_type }} ({{ app.application_type }}) &bull; Current Status: 
+          <span class="badge {% if app.status == 'Approved' %}badge-success{% elif app.status == 'Submitted' %}badge-info{% elif app.status == 'Under Verification' %}badge-warning{% elif app.status == 'Dispatched' %}badge-dark{% elif app.status == 'Rejected' %}badge-danger{% elif app.status == 'Returned for Correction' %}badge-warning{% else %}badge-draft{% endif %}">
+            {{ app.status }}
+          </span>
+        </p>
+      </div>
+
+      <div>
+        <a href="{{ url_for('officer.application_details', app_id=app.id) }}" class="btn btn-secondary btn-sm">
+          <i class="fas fa-eye"></i> View Full Dossier
+        </a>
+      </div>
+    </div>
+
+    <!-- Document Verification Checklist Card -->
+    <div class="card" style="margin-bottom: 28px;">
+      <div class="card-header" style="background: #f8fafc;">
+        <div>
+          <h3 style="font-size: 17px;"><i class="fas fa-clipboard-check" style="color: var(--primary-600);"></i> Mandatory Document Checklist</h3>
+          <p style="font-size: 12px; color: var(--slate-500); margin-top: 2px;">
+            Inspect each physical/digital copy. Required categories (Identity, Address, Photo) must be marked 'Verified' before approving.
+          </p>
+        </div>
+        <div>
+          {% if app.has_all_mandatory_docs_verified %}
+            <span class="badge badge-success" style="font-size: 12px; padding: 6px 12px;">
+              <i class="fas fa-check-circle"></i> All Required Docs Verified
+            </span>
+          {% else %}
+            <span class="badge badge-warning" style="font-size: 12px; padding: 6px 12px;">
+              <i class="fas fa-exclamation-triangle"></i> Mandatory Docs Pending
+            </span>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="card-body" style="padding: 0;">
+        {% if documents %}
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th>File Name & Size</th>
+                  <th>Preview</th>
+                  <th>Current State</th>
+                  <th>Officer Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for doc in documents %}
+                  <tr>
+                    <td>
+                      <strong>{{ doc.doc_type }}</strong>
+                      {% if doc.doc_type in ['Identity Proof', 'Address Proof', 'Photograph'] %}
+                        <span style="font-size: 10px; color: var(--primary-600); font-weight: 700; display: block;">MANDATORY</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      <div>{{ doc.original_filename }}</div>
+                      <div style="font-size: 11px; color: var(--slate-400);">{{ doc.formatted_size }} &bull; {{ doc.uploaded_at.strftime('%d %b %Y') }}</div>
+                      {% if doc.rejection_reason %}
+                        <div style="font-size: 11px; color: var(--danger-600); margin-top: 4px;">
+                          <strong>Reason:</strong> {{ doc.rejection_reason }}
+                        </div>
+                      {% endif %}
+                    </td>
+                    <td>
+                      <button type="button" class="btn btn-secondary btn-sm" onclick="previewDocument('{{ url_for('uploaded_file', filename=doc.stored_filename) }}', '{{ doc.original_filename }}', '{{ doc.mime_type }}')">
+                        <i class="fas fa-eye"></i> View
+                      </button>
+                    </td>
+                    <td>
+                      <span class="badge {% if doc.verification_status == 'Verified' %}badge-success{% elif doc.verification_status == 'Rejected' %}badge-danger{% else %}badge-info{% endif %}">
+                        {{ doc.verification_status }}
+                      </span>
+                    </td>
+                    <td>
+                      <div style="display: flex; gap: 8px;">
+                        
+                        <!-- Verify Form -->
+                        <form action="{{ url_for('officer.verify_document', app_id=app.id) }}" method="POST" style="margin: 0;">
+                          <input type="hidden" name="doc_id" value="{{ doc.id }}">
+                          <input type="hidden" name="status" value="Verified">
+                          <button type="submit" class="btn btn-success btn-sm" {% if doc.verification_status == 'Verified' %}disabled{% endif %} title="Approve Document">
+                            <i class="fas fa-check"></i> Verify
+                          </button>
+                        </form>
+
+                        <!-- Reject Modal Trigger -->
+                        <button type="button" class="btn btn-danger btn-sm" onclick="openDocRejectModal({{ doc.id }}, '{{ doc.doc_type }}')" title="Reject Document">
+                          <i class="fas fa-times"></i> Reject
+                        </button>
+
+                      </div>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div style="padding: 32px; text-align: center; color: var(--slate-400);">
+            No documents uploaded for this application.
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Final Application Decision Panel -->
+    <div class="card" style="border: 2px solid var(--primary-200); background: #f8fafc;">
+      <div class="card-header" style="background: var(--surface-white);">
+        <h3><i class="fas fa-gavel" style="color: var(--primary-600);"></i> Application Adjudication Decision</h3>
+      </div>
+      <div class="card-body" style="padding: 24px 32px;">
+        <p style="font-size: 13px; color: var(--slate-600); margin-bottom: 20px;">
+          Choose an adjudication decision. Approving will transition the application status to <strong>Approved</strong> and queue it for booklet printing. Rejecting or returning for correction requires mandatory justification.
+        </p>
+
+        <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center;">
+          
+          <!-- Approve Button (Direct POST) -->
+          <form action="{{ url_for('officer.application_action', app_id=app.id) }}" method="POST" onsubmit="return confirm('Authorize and approve this passport application?');" style="margin: 0;">
+            <input type="hidden" name="action" value="Approve">
+            <input type="hidden" name="remarks" value="Application cleared and approved by Senior Verification Officer.">
+            <button type="submit" class="btn btn-success btn-lg" {% if not app.has_all_mandatory_docs_verified %}disabled title="Mandatory documents must be verified first"{% endif %}>
+              <i class="fas fa-check-circle"></i> Approve Application
+            </button>
+          </form>
+
+          <!-- Return for Correction Trigger -->
+          <button type="button" class="btn btn-warning btn-lg" onclick="openModal('return_modal')">
+            <i class="fas fa-undo"></i> Return for Correction
+          </button>
+
+          <!-- Reject Trigger -->
+          <button type="button" class="btn btn-danger btn-lg" onclick="openModal('reject_modal')">
+            <i class="fas fa-times-circle"></i> Reject Application
+          </button>
+
+        </div>
+
+        {% if not app.has_all_mandatory_docs_verified %}
+          <div style="margin-top: 14px; font-size: 12px; color: var(--danger-600); font-weight: 600;">
+            <i class="fas fa-info-circle"></i> Note: Approval button is locked until Identity Proof, Address Proof, and Photograph are all verified.
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+  </main>
+
+</div>
+
+<!-- Reject Document Modal -->
+<div class="modal-overlay" id="doc_reject_modal">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <h4>Reject Document: <span id="reject_doc_type"></span></h4>
+      <button type="button" class="modal-close" onclick="closeModal('doc_reject_modal')">&times;</button>
+    </div>
+    <form action="{{ url_for('officer.verify_document', app_id=app.id) }}" method="POST">
+      <input type="hidden" name="doc_id" id="reject_doc_id">
+      <input type="hidden" name="status" value="Rejected">
+      
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Mandatory Rejection Reason <span class="required">*</span></label>
+          <textarea name="reason" class="form-control" rows="3" placeholder="e.g. Illegible scan, expired document, name mismatch..." required></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('doc_reject_modal')">Cancel</button>
+        <button type="submit" class="btn btn-danger">Confirm Rejection</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Return Application for Correction Modal -->
+<div class="modal-overlay" id="return_modal">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <h4>Return Application for Citizen Correction</h4>
+      <button type="button" class="modal-close" onclick="closeModal('return_modal')">&times;</button>
+    </div>
+    <form action="{{ url_for('officer.application_action', app_id=app.id) }}" method="POST">
+      <input type="hidden" name="action" value="Return">
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Reason for Return (Mandatory) <span class="required">*</span></label>
+          <textarea name="reason" class="form-control" rows="3" placeholder="Explain what the applicant needs to correct or re-upload..." required></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Internal Officer Remarks</label>
+          <input type="text" name="remarks" class="form-control" placeholder="Internal memo for record">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('return_modal')">Cancel</button>
+        <button type="submit" class="btn btn-warning">Confirm & Notify Citizen</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Reject Application Modal -->
+<div class="modal-overlay" id="reject_modal">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <h4>Reject Passport Application</h4>
+      <button type="button" class="modal-close" onclick="closeModal('reject_modal')">&times;</button>
+    </div>
+    <form action="{{ url_for('officer.application_action', app_id=app.id) }}" method="POST">
+      <input type="hidden" name="action" value="Reject">
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Official Rejection Reason (Mandatory) <span class="required">*</span></label>
+          <textarea name="reason" class="form-control" rows="3" placeholder="e.g. Discrepancy in biometric verification, criminal record match, fraudulent documentation..." required></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Officer Additional Remarks</label>
+          <input type="text" name="remarks" class="form-control" placeholder="Confidential officer notes">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('reject_modal')">Cancel</button>
+        <button type="submit" class="btn btn-danger">Confirm Permanent Rejection</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Document Preview Modal Dialog -->
+<div class="modal-overlay" id="doc_preview_modal">
+  <div class="modal-dialog" style="max-width: 700px;">
+    <div class="modal-header">
+      <h4 id="preview_modal_title">Document Inspection</h4>
+      <button type="button" class="modal-close" onclick="closeModal('doc_preview_modal')">&times;</button>
+    </div>
+    <div class="modal-body" id="preview_content" style="padding: 16px;"></div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" onclick="closeModal('doc_preview_modal')">Close Preview</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+<script>
+function openDocRejectModal(docId, docType) {
+  document.getElementById('reject_doc_id').value = docId;
+  document.getElementById('reject_doc_type').textContent = docType;
+  openModal('doc_reject_modal');
+}
+</script>
+{% endblock %}

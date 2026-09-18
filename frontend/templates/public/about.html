@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}About System — Passport Automation System{% endblock %}
+
+{% block content %}
+<div class="container">
+  <ul class="breadcrumb">
+    <li><a href="{{ url_for('auth.index') }}"><i class="fas fa-home"></i> Home</a></li>
+    <li class="breadcrumb-separator">/</li>
+    <li>About System</li>
+  </ul>
+
+  <div style="margin-bottom: 32px;">
+    <h1>About the Passport Automation System</h1>
+    <p style="font-size: 16px; color: var(--slate-600); margin-top: 6px;">
+      Software Engineering Lab Project — Architecture, Requirements, and Specifications
+    </p>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px;">
+    
+    <div>
+      <!-- System Overview -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-info-circle" style="color: var(--primary-600);"></i> 1. System Overview & Objective</h3>
+        </div>
+        <div class="card-body">
+          <p>
+            The <strong>Passport Automation System (PAS)</strong> is a full-stack web application developed to replace manual, paper-intensive passport issuance procedures with a centralized, transparent, and auditable digital platform.
+          </p>
+          <p style="margin-top: 12px;">
+            The system governs applicant registration, multi-step passport requisition form processing, digital document repository storage, double-booking protected appointment scheduling, multi-officer document verification, and progressive real-time status tracking.
+          </p>
+        </div>
+      </div>
+
+      <!-- Three Tier Architecture -->
+      <div class="card" id="architecture">
+        <div class="card-header">
+          <h3><i class="fas fa-layer-group" style="color: var(--primary-600);"></i> 2. Three-Tier Architectural Specification</h3>
+        </div>
+        <div class="card-body">
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            
+            <div style="padding: 16px; border: 1px solid var(--slate-200); border-radius: var(--radius-sm); background: var(--slate-50);">
+              <h4 style="color: var(--primary-800);"><i class="fas fa-desktop" style="margin-right: 8px;"></i> Tier 1: Presentation Layer (Client)</h4>
+              <p style="font-size: 13px; color: var(--slate-600); margin-top: 6px;">
+                Engineered with HTML5, CSS3 design tokens, and modular vanilla JavaScript. Delivers responsive portals for both citizen applicants and verification officers with zero third-party UI bloat.
+              </p>
+            </div>
+
+            <div style="padding: 16px; border: 1px solid var(--slate-200); border-radius: var(--radius-sm); background: var(--slate-50);">
+              <h4 style="color: var(--primary-800);"><i class="fas fa-cogs" style="margin-right: 8px;"></i> Tier 2: Application Layer (Business Logic)</h4>
+              <p style="font-size: 13px; color: var(--slate-600); margin-top: 6px;">
+                Powered by Python Flask microservices and RESTful API endpoints. Implements Werkzeug cryptographic hashing, session-based role authorization, validation pipelines, appointment slot mutex concurrency, and event-driven notifications.
+              </p>
+            </div>
+
+            <div style="padding: 16px; border: 1px solid var(--slate-200); border-radius: var(--radius-sm); background: var(--slate-50);">
+              <h4 style="color: var(--primary-800);"><i class="fas fa-database" style="margin-right: 8px;"></i> Tier 3: Database Layer (Data Persistence)</h4>
+              <p style="font-size: 13px; color: var(--slate-600); margin-top: 6px;">
+                Normalized relational schema (MySQL 8.0 / SQLite dual compatibility) managed via SQLAlchemy ORM. Maintains strict foreign key constraints, cascading policies, and transactional audit trails.
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Functional Requirements -->
+      <div class="card" id="features">
+        <div class="card-header">
+          <h3><i class="fas fa-list-check" style="color: var(--primary-600);"></i> 3. Functional Requirements Summary</h3>
+        </div>
+        <div class="card-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Module</th>
+                <th>Actors</th>
+                <th>Key Operations</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Authentication</strong></td>
+                <td>Applicant, Officer, Admin</td>
+                <td>Secure registration, password hashing (scrypt), role-based session guarding.</td>
+              </tr>
+              <tr>
+                <td><strong>Application Lifecycle</strong></td>
+                <td>Applicant</td>
+                <td>5-Step form wizard, draft saving, document upload, review, sequential ID generation.</td>
+              </tr>
+              <tr>
+                <td><strong>Appointments</strong></td>
+                <td>Applicant, Admin</td>
+                <td>Capacity-bounded slot reservation, double-booking mutex lock, appointment slip generation.</td>
+              </tr>
+              <tr>
+                <td><strong>Document Verification</strong></td>
+                <td>Passport Officer</td>
+                <td>Per-document inspection checklist, mandatory rejection rationale, approval authorization.</td>
+              </tr>
+              <tr>
+                <td><strong>Audit & Reports</strong></td>
+                <td>Administrator</td>
+                <td>State transition history logging, notification dispatching, filterable CSV reports.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Quick Sidebar Details -->
+    <div>
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-microchip"></i> Technology Stack</h3>
+        </div>
+        <div class="card-body" style="font-size: 13px;">
+          <p><strong>Frontend:</strong> HTML5, CSS3, Vanilla JS</p>
+          <p style="margin-top: 8px;"><strong>Backend:</strong> Python 3.12, Flask 3.1</p>
+          <p style="margin-top: 8px;"><strong>ORM Layer:</strong> SQLAlchemy / PyMySQL</p>
+          <p style="margin-top: 8px;"><strong>Database:</strong> MySQL 8.0 / SQLite Dual-Engine</p>
+          <p style="margin-top: 8px;"><strong>Security:</strong> Werkzeug Scrypt, Session Auth</p>
+          <p style="margin-top: 8px;"><strong>Storage:</strong> Isolated Server Filesystem</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-graduation-cap"></i> Viva Quick Fact</h3>
+        </div>
+        <div class="card-body" style="font-size: 13px; line-height: 1.6;">
+          <p>
+            <strong>Why Three-Tier Architecture?</strong><br>
+            It decouples presentation (UI) from business logic (rules & validations) and database storage, ensuring independent scalability, maintainability, and enhanced security against direct database manipulation.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

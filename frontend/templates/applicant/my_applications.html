@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}My Applications — Passport Automation System{% endblock %}
+
+{% block content %}
+<div class="container">
+  
+  <ul class="breadcrumb">
+    <li><a href="{{ url_for('applicant.dashboard') }}"><i class="fas fa-home"></i> Dashboard</a></li>
+    <li class="breadcrumb-separator">/</li>
+    <li>My Applications</li>
+  </ul>
+
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 14px;">
+    <div>
+      <h2 style="font-size: 24px; color: var(--primary-900);">My Passport Applications</h2>
+      <p style="font-size: 13px; color: var(--slate-600); margin-top: 4px;">
+        Comprehensive history of all draft, active, and completed applications
+      </p>
+    </div>
+    <div>
+      <a href="{{ url_for('applicant.new_application') }}" class="btn btn-primary">
+        <i class="fas fa-plus-circle"></i> Start New Application
+      </a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body" style="padding: 0;">
+      {% if applications %}
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Application ID</th>
+                <th>Applicant Name</th>
+                <th>Service & Scheme</th>
+                <th>Status</th>
+                <th>Appointment</th>
+                <th>Created / Submitted</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for a in applications %}
+                <tr>
+                  <td>
+                    {% if a.application_number %}
+                      <code>{{ a.application_number }}</code>
+                    {% else %}
+                      <span style="color: var(--slate-400); font-style: italic;">Draft (Not Submitted)</span>
+                    {% endif %}
+                  </td>
+                  <td style="font-weight: 600; color: var(--slate-800);">{{ a.full_name or 'N/A' }}</td>
+                  <td>{{ a.service_type }} ({{ a.application_type }})</td>
+                  <td>
+                    <span class="badge {% if a.status == 'Approved' %}badge-success{% elif a.status == 'Submitted' %}badge-info{% elif a.status == 'Under Verification' %}badge-warning{% elif a.status == 'Dispatched' %}badge-dark{% elif a.status == 'Rejected' %}badge-danger{% elif a.status == 'Returned for Correction' %}badge-warning{% else %}badge-draft{% endif %}">
+                      {{ a.status }}
+                    </span>
+                  </td>
+                  <td>
+                    {% if a.appointment %}
+                      <div style="font-size: 12px; font-weight: 600; color: var(--primary-700);">
+                        <i class="far fa-calendar-alt"></i> {{ a.appointment.appointment_date.strftime('%d %b %Y') }}
+                      </div>
+                      <div style="font-size: 11px; color: var(--slate-500);">
+                        {{ a.appointment.appointment_time }}
+                      </div>
+                    {% elif a.status != 'Draft' %}
+                      <a href="{{ url_for('applicant.appointment_schedule', app_id=a.id) }}" class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px;">
+                        Book Slot
+                      </a>
+                    {% else %}
+                      <span style="font-size: 12px; color: var(--slate-400);">After Submit</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <div style="font-size: 12px;">{{ a.created_at.strftime('%d %b %Y') }}</div>
+                    {% if a.submitted_at %}
+                      <div style="font-size: 11px; color: var(--slate-500);">Sub: {{ a.submitted_at.strftime('%d %b %Y') }}</div>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <div style="display: flex; gap: 6px;">
+                      {% if a.status in ['Draft', 'Returned for Correction'] %}
+                        <a href="{{ url_for('applicant.form_wizard', app_id=a.id, step=a.current_step) }}" class="btn btn-primary btn-sm" title="Resume Application">
+                          <i class="fas fa-arrow-right"></i> Resume
+                        </a>
+                      {% else %}
+                        <a href="{{ url_for('applicant.status_tracking', app_id=a.id) }}" class="btn btn-outline btn-sm" title="Track Live Status">
+                          <i class="fas fa-route"></i> Track
+                        </a>
+                        <a href="{{ url_for('applicant.application_details', app_id=a.id) }}" class="btn btn-secondary btn-sm" title="View Full Details">
+                          <i class="fas fa-eye"></i> Details
+                        </a>
+                      {% endif %}
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div style="text-align: center; padding: 48px 20px;">
+          <i class="fas fa-folder-open" style="font-size: 42px; color: var(--slate-300); margin-bottom: 12px;"></i>
+          <h3 style="color: var(--slate-700);">No Applications Found</h3>
+          <p style="font-size: 14px; color: var(--slate-500); margin: 6px 0 16px;">
+            You have not initiated any passport applications yet.
+          </p>
+          <a href="{{ url_for('applicant.new_application') }}" class="btn btn-primary">
+            <i class="fas fa-plus-circle"></i> Start New Application
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

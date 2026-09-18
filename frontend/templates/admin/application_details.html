@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block title %}Application Dossier — {{ app.application_number }} — Admin{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+  
+  {% include 'components/sidebar.html' %}
+
+  <main class="admin-content">
+    
+    <ul class="breadcrumb no-print">
+      <li><a href="{{ url_for('officer.dashboard') }}"><i class="fas fa-home"></i> Admin</a></li>
+      <li class="breadcrumb-separator">/</li>
+      <li><a href="{{ url_for('officer.applications') }}">Applications</a></li>
+      <li class="breadcrumb-separator">/</li>
+      <li>Dossier: {{ app.application_number }}</li>
+    </ul>
+
+    <!-- Header Actions -->
+    <div style="background: var(--surface-white); border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 24px 28px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+      <div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <h2 style="font-size: 22px; color: var(--primary-900); margin: 0;">
+            <code>{{ app.application_number }}</code> &bull; {{ app.full_name }}
+          </h2>
+          <span class="badge {% if app.status == 'Approved' %}badge-success{% elif app.status == 'Submitted' %}badge-info{% elif app.status == 'Under Verification' %}badge-warning{% elif app.status == 'Dispatched' %}badge-dark{% elif app.status == 'Rejected' %}badge-danger{% elif app.status == 'Returned for Correction' %}badge-warning{% else %}badge-draft{% endif %}">
+            {{ app.status }}
+          </span>
+        </div>
+        <p style="font-size: 13px; color: var(--slate-500); margin-top: 4px;">
+          Applicant: {{ app.applicant.user.email }} &bull; Mobile: {{ app.mobile_number }} &bull; Submitted: {{ app.submitted_at.strftime('%d %b %Y, %H:%M') if app.submitted_at else 'Draft' }}
+        </p>
+      </div>
+
+      <div class="no-print" style="display: flex; gap: 8px;">
+        <a href="{{ url_for('officer.verification', app_id=app.id) }}" class="btn btn-primary">
+          <i class="fas fa-check-double"></i> Document Verification
+        </a>
+        <button type="button" class="btn btn-secondary" onclick="window.print();">
+          <i class="fas fa-print"></i> Print
+        </button>
+      </div>
+    </div>
+
+    <!-- Section 1: Detailed Info -->
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 24px;">
+      
+      <div class="card" style="margin: 0;">
+        <div class="card-header">
+          <h3><i class="far fa-id-card" style="color: var(--primary-600);"></i> Applicant Bio-data & Particulars</h3>
+        </div>
+        <div class="card-body">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 14px;">
+            <div>
+              <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Legal Full Name</span>
+              <div style="font-weight: 600; color: var(--slate-800);">{{ app.full_name }}</div>
+            </div>
+            <div>
+              <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Date of Birth</span>
+              <div style="font-weight: 600; color: var(--slate-800);">{{ app.date_of_birth.strftime('%d %B %Y') if app.date_of_birth else 'N/A' }}</div>
+            </div>
+            <div>
+              <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Gender</span>
+              <div style="font-weight: 600; color: var(--slate-800);">{{ app.gender }}</div>
+            </div>
+            <div>
+              <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Place of Birth</span>
+              <div style="font-weight: 600; color: var(--slate-800);">{{ app.place_of_birth }}</div>
+            </div>
+            <div>
+              <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Nationality</span>
+              <div style="font-weight: 600; color: var(--slate-800);">{{ app.nationality }}</div>
+            </div>
+            <div>
+              <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Marital Status</span>
+              <div style="font-weight: 600; color: var(--slate-800);">{{ app.marital_status }}</div>
+            </div>
+          </div>
+
+          <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--slate-100); font-size: 14px;">
+            <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Permanent Residential Address</span>
+            <div style="font-weight: 600; color: var(--slate-800); margin-top: 2px;">
+              {{ app.house_no }}, {{ app.street }}, {{ app.city }}, {{ app.district }}, {{ app.state }} - {{ app.pincode }}, {{ app.country }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Service & Appointment -->
+      <div class="card" style="margin: 0;">
+        <div class="card-header">
+          <h3><i class="far fa-calendar-check" style="color: var(--primary-600);"></i> Logistics & Slot</h3>
+        </div>
+        <div class="card-body" style="font-size: 13px;">
+          <table style="width: 100%; line-height: 2;">
+            <tr>
+              <td style="color: var(--slate-500);">Scheme:</td>
+              <td style="font-weight: 600; color: var(--slate-800);">{{ app.service_type }} ({{ app.application_type }})</td>
+            </tr>
+            <tr>
+              <td style="color: var(--slate-500);">Booklet:</td>
+              <td style="font-weight: 600; color: var(--slate-800);">{{ app.booklet_type }}</td>
+            </tr>
+            {% if app.previous_passport_number %}
+              <tr>
+                <td style="color: var(--slate-500);">Prev Passport:</td>
+                <td style="font-weight: 700; color: var(--primary-800); font-family: var(--font-mono);">{{ app.previous_passport_number }}</td>
+              </tr>
+            {% endif %}
+            <tr>
+              <td style="color: var(--slate-500);">Appointment:</td>
+              <td style="font-weight: 600; color: var(--slate-800);">
+                {% if appointment %}
+                  {{ appointment.appointment_date.strftime('%d %b %Y') }} ({{ appointment.appointment_time }})
+                {% else %}
+                  <span style="color: var(--slate-400);">Not Booked</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% if appointment %}
+              <tr>
+                <td style="color: var(--slate-500);">PSK Center:</td>
+                <td style="font-weight: 600; color: var(--slate-800);">{{ appointment.location }}</td>
+              </tr>
+            {% endif %}
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Section 2: Uploaded Documents Table -->
+    <div class="card">
+      <div class="card-header">
+        <h3><i class="fas fa-paperclip" style="color: var(--primary-600);"></i> Supporting Documents & Verification Status</h3>
+        <a href="{{ url_for('officer.verification', app_id=app.id) }}" class="btn btn-outline btn-sm">
+          <i class="fas fa-check-double"></i> Open Verification Checklist
+        </a>
+      </div>
+      <div class="card-body" style="padding: 0;">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>File Name</th>
+                <th>Size</th>
+                <th>Uploaded</th>
+                <th>Verification</th>
+                <th>Preview / Download</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for d in documents %}
+                <tr>
+                  <td><strong>{{ d.doc_type }}</strong></td>
+                  <td>{{ d.original_filename }}</td>
+                  <td>{{ d.formatted_size }}</td>
+                  <td>{{ d.uploaded_at.strftime('%d %b %Y') }}</td>
+                  <td>
+                    <span class="badge {% if d.verification_status == 'Verified' %}badge-success{% elif d.verification_status == 'Rejected' %}badge-danger{% else %}badge-info{% endif %}">
+                      {{ d.verification_status }}
+                    </span>
+                    {% if d.rejection_reason %}
+                      <div style="font-size: 11px; color: var(--danger-600); margin-top: 2px;">
+                        Reason: {{ d.rejection_reason }}
+                      </div>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="previewDocument('{{ url_for('uploaded_file', filename=d.stored_filename) }}', '{{ d.original_filename }}', '{{ d.mime_type }}')">
+                      <i class="fas fa-eye"></i> View File
+                    </button>
+                  </td>
+                </tr>
+              {% else %}
+                <tr>
+                  <td colspan="6" style="text-align: center; padding: 24px; color: var(--slate-400);">No documents uploaded.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Verification History & Status Audit -->
+    <div class="card">
+      <div class="card-header">
+        <h3><i class="fas fa-history" style="color: var(--primary-600);"></i> Officer Audit Trail & State Transitions</h3>
+      </div>
+      <div class="card-body">
+        {% if history %}
+          <div class="audit-trail">
+            {% for h in history %}
+              <div class="audit-item">
+                <div class="audit-marker {% if 'Approved' in h.new_status %}success{% elif 'Rejected' in h.new_status %}danger{% elif 'Returned' in h.new_status %}warning{% endif %}"></div>
+                <div class="audit-content">
+                  <div class="audit-header">
+                    <span class="audit-title">{{ h.previous_status }} &rarr; <strong>{{ h.new_status }}</strong></span>
+                    <span class="audit-time">{{ h.created_at.strftime('%d %b %Y, %I:%M %p') }}</span>
+                  </div>
+                  <div class="audit-remarks">
+                    {{ h.remarks or 'Updated.' }} {% if h.updater %}&bull; <em>By: {{ h.updater.full_name }} ({{ h.updater.role }})</em>{% endif %}
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p style="color: var(--slate-400); font-size: 13px;">No history records found.</p>
+        {% endif %}
+      </div>
+    </div>
+
+  </main>
+
+</div>
+
+<!-- Document Preview Modal Dialog -->
+<div class="modal-overlay" id="doc_preview_modal">
+  <div class="modal-dialog" style="max-width: 700px;">
+    <div class="modal-header">
+      <h4 id="preview_modal_title">Document Inspection</h4>
+      <button type="button" class="modal-close" onclick="closeModal('doc_preview_modal')">&times;</button>
+    </div>
+    <div class="modal-body" id="preview_content" style="padding: 16px;"></div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" onclick="closeModal('doc_preview_modal')">Close Preview</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+{% endblock %}

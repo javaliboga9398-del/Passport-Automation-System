@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Applicant Profile — Passport Automation System{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 760px;">
+  
+  <ul class="breadcrumb">
+    <li><a href="{{ url_for('applicant.dashboard') }}"><i class="fas fa-home"></i> Dashboard</a></li>
+    <li class="breadcrumb-separator">/</li>
+    <li>My Profile</li>
+  </ul>
+
+  <div class="card">
+    <div class="card-header" style="background: var(--surface-white); padding: 22px 28px;">
+      <div>
+        <h2 style="font-size: 20px; color: var(--primary-900);">Citizen Profile Settings</h2>
+        <p style="font-size: 13px; color: var(--slate-500); margin-top: 2px;">Manage your primary registration and residential details</p>
+      </div>
+      <div>
+        <a href="{{ url_for('auth.change_password') }}" class="btn btn-outline btn-sm">
+          <i class="fas fa-key"></i> Change Password
+        </a>
+      </div>
+    </div>
+
+    <div class="card-body" style="padding: 28px;">
+      <form action="{{ url_for('applicant.profile') }}" method="POST">
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="full_name">Full Legal Name <span class="required">*</span></label>
+            <input type="text" name="full_name" id="full_name" class="form-control" value="{{ user.full_name }}" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="email">Email Address</label>
+            <input type="email" class="form-control" value="{{ user.email }}" readonly style="background-color: var(--slate-100); cursor: not-allowed;">
+            <div class="form-text">Primary identifier cannot be modified.</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="mobile_number">Mobile Number <span class="required">*</span></label>
+            <input type="tel" name="mobile_number" id="mobile_number" class="form-control" value="{{ user.mobile_number }}" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="date_of_birth">Date of Birth</label>
+            <input type="date" name="date_of_birth" id="date_of_birth" class="form-control" value="{{ applicant.date_of_birth.strftime('%Y-%m-%d') if applicant.date_of_birth else '' }}">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Gender</label>
+          <div style="display: flex; gap: 24px; padding-top: 4px;">
+            <label class="form-check">
+              <input type="radio" name="gender" value="Male" class="form-check-input" {% if applicant.gender == 'Male' %}checked{% endif %}>
+              <span class="form-check-label">Male</span>
+            </label>
+            <label class="form-check">
+              <input type="radio" name="gender" value="Female" class="form-check-input" {% if applicant.gender == 'Female' %}checked{% endif %}>
+              <span class="form-check-label">Female</span>
+            </label>
+            <label class="form-check">
+              <input type="radio" name="gender" value="Other" class="form-check-input" {% if applicant.gender == 'Other' %}checked{% endif %}>
+              <span class="form-check-label">Other</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="address_line">Residential Address Line</label>
+          <input type="text" name="address_line" id="address_line" class="form-control" value="{{ applicant.address_line or '' }}">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="city">City / Town</label>
+            <input type="text" name="city" id="city" class="form-control" value="{{ applicant.city or '' }}">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="district">District</label>
+            <input type="text" name="district" id="district" class="form-control" value="{{ applicant.district or '' }}">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="state">State / Union Territory</label>
+            <input type="text" name="state" id="state" class="form-control" value="{{ applicant.state or '' }}">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="pincode">PIN Code</label>
+            <input type="text" name="pincode" id="pincode" class="form-control" value="{{ applicant.pincode or '' }}">
+          </div>
+        </div>
+
+        <div style="margin-top: 24px; display: flex; justify-content: flex-end;">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i> Save Profile Changes
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

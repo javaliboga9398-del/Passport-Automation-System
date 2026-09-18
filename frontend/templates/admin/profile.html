@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Officer Profile — Admin{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+  
+  {% include 'components/sidebar.html' %}
+
+  <main class="admin-content">
+    
+    <div style="max-width: 680px;">
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-user-shield" style="color: var(--primary-600);"></i> Administrative Officer Profile</h3>
+        </div>
+        <div class="card-body" style="padding: 28px;">
+          
+          <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--slate-200);">
+            <div style="width: 64px; height: 64px; background: var(--primary-700); color: #fff; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 700;">
+              {{ user.full_name[0] }}
+            </div>
+            <div>
+              <h3 style="font-size: 18px; margin: 0; color: var(--slate-900);">{{ user.full_name }}</h3>
+              <p style="font-size: 13px; color: var(--slate-500); margin: 2px 0 0;">Role: <strong style="text-transform: capitalize;">{{ user.role }}</strong> &bull; Department of Passports</p>
+            </div>
+          </div>
+
+          <table style="width: 100%; font-size: 14px; line-height: 2.2;">
+            <tr>
+              <td style="color: var(--slate-500); width: 160px;">Email Identifier:</td>
+              <td style="font-weight: 600; color: var(--slate-800);"><code>{{ user.email }}</code></td>
+            </tr>
+            <tr>
+              <td style="color: var(--slate-500);">Contact Phone:</td>
+              <td style="font-weight: 600; color: var(--slate-800);">{{ user.mobile_number }}</td>
+            </tr>
+            <tr>
+              <td style="color: var(--slate-500);">Account Authority:</td>
+              <td>
+                <span class="badge {% if user.role == 'admin' %}badge-danger{% else %}badge-primary{% endif %}">
+                  {{ user.role|capitalize }} Privilege
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td style="color: var(--slate-500);">Member Since:</td>
+              <td style="color: var(--slate-700);">{{ user.created_at.strftime('%d %B %Y') if user.created_at else 'System Seed' }}</td>
+            </tr>
+          </table>
+
+          <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--slate-200); display: flex; justify-content: space-between; align-items: center;">
+            <a href="{{ url_for('auth.change_password') }}" class="btn btn-outline btn-sm">
+              <i class="fas fa-key"></i> Change Security Password
+            </a>
+            <a href="{{ url_for('officer.dashboard') }}" class="btn btn-secondary btn-sm">
+              Back to Dashboard
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+</div>
+{% endblock %}

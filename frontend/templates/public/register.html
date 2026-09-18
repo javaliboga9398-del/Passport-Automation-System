@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Applicant Registration — Passport Automation System{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 760px; margin: 20px auto;">
+  
+  <div class="card">
+    <div class="card-header" style="background: var(--surface-white); padding: 24px 32px;">
+      <div>
+        <h2 style="font-size: 22px; color: var(--primary-900);">Citizen Registration Portal</h2>
+        <p style="font-size: 13px; color: var(--slate-500); margin-top: 4px;">Register a new applicant account to access passport services</p>
+      </div>
+    </div>
+    
+    <div class="card-body" style="padding: 32px;">
+      <form action="{{ url_for('auth.register') }}" method="POST" id="regForm">
+        
+        <h4 style="font-size: 15px; color: var(--primary-700); margin-bottom: 16px; border-bottom: 1px solid var(--slate-200); padding-bottom: 6px;">
+          <i class="far fa-user" style="margin-right: 6px;"></i> 1. Personal Identity Details
+        </h4>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="full_name">Full Legal Name <span class="required">*</span></label>
+            <input type="text" name="full_name" id="full_name" class="form-control" placeholder="As in official documents" value="{{ full_name or '' }}" required>
+            <div class="form-text">Enter your full name without titles like Mr./Ms.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="email">Email Address <span class="required">*</span></label>
+            <input type="email" name="email" id="email" class="form-control" placeholder="your.name@example.com" value="{{ email or '' }}" required>
+            <div class="form-text">Used for login and application alerts.</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="mobile_number">Mobile Number (10 Digits) <span class="required">*</span></label>
+            <input type="tel" name="mobile_number" id="mobile_number" class="form-control" placeholder="9876543210" pattern="[6-9][0-9]{9}" value="{{ mobile_number or '' }}" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="date_of_birth">Date of Birth <span class="required">*</span></label>
+            <input type="date" name="date_of_birth" id="date_of_birth" class="form-control" value="{{ date_of_birth or '' }}" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Gender <span class="required">*</span></label>
+          <div style="display: flex; gap: 24px; padding-top: 4px;">
+            <label class="form-check" style="margin: 0;">
+              <input type="radio" name="gender" value="Male" class="form-check-input" {% if gender == 'Male' or not gender %}checked{% endif %}>
+              <span class="form-check-label">Male</span>
+            </label>
+            <label class="form-check" style="margin: 0;">
+              <input type="radio" name="gender" value="Female" class="form-check-input" {% if gender == 'Female' %}checked{% endif %}>
+              <span class="form-check-label">Female</span>
+            </label>
+            <label class="form-check" style="margin: 0;">
+              <input type="radio" name="gender" value="Other" class="form-check-input" {% if gender == 'Other' %}checked{% endif %}>
+              <span class="form-check-label">Other</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="address">Residential Address</label>
+          <textarea name="address" id="address" class="form-control" rows="2" placeholder="House/Flat No, Street, Landmark">{{ address or '' }}</textarea>
+        </div>
+
+        <h4 style="font-size: 15px; color: var(--primary-700); margin: 24px 0 16px; border-bottom: 1px solid var(--slate-200); padding-bottom: 6px;">
+          <i class="fas fa-lock" style="margin-right: 6px;"></i> 2. Security & Credentials
+        </h4>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="password">Create Password <span class="required">*</span></label>
+            <input type="password" name="password" id="password" class="form-control" placeholder="Min. 6 characters" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="confirm_password">Confirm Password <span class="required">*</span></label>
+            <input type="password" name="confirm_password" id="confirm_password" class="form-control" placeholder="Re-type password" required>
+          </div>
+        </div>
+
+        <div class="form-check" style="margin: 20px 0 24px;">
+          <input type="checkbox" id="terms" class="form-check-input" required>
+          <label for="terms" class="form-check-label" style="font-size: 13px;">
+            I confirm that the information furnished above is accurate and true to the best of my knowledge.
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+          <i class="fas fa-user-plus"></i> Complete Applicant Registration
+        </button>
+
+        <div style="text-align: center; margin-top: 20px; font-size: 14px; color: var(--slate-600);">
+          Already registered? <a href="{{ url_for('auth.login') }}" style="color: var(--primary-600); font-weight: 600; text-decoration: none;">Sign in here</a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

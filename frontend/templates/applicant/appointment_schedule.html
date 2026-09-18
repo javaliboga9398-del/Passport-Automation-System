@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Schedule Appointment — Passport Automation System{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 920px;">
+  
+  <ul class="breadcrumb">
+    <li><a href="{{ url_for('applicant.dashboard') }}"><i class="fas fa-home"></i> Dashboard</a></li>
+    <li class="breadcrumb-separator">/</li>
+    <li><a href="{{ url_for('applicant.my_applications') }}">My Applications</a></li>
+    <li class="breadcrumb-separator">/</li>
+    <li>Appointment Scheduling</li>
+  </ul>
+
+  <!-- Application Banner -->
+  <div style="background: var(--surface-white); border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 20px 24px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+    <div>
+      <span style="font-size: 11px; font-weight: 700; color: var(--slate-400); text-transform: uppercase;">Application Reference</span>
+      <h2 style="font-size: 20px; color: var(--primary-900); margin: 2px 0;">
+        <code>{{ app.application_number }}</code> &bull; {{ app.full_name }}
+      </h2>
+      <p style="font-size: 13px; color: var(--slate-600); margin: 0;">
+        {{ app.service_type }} ({{ app.application_type }}) &bull; Status: <span class="badge badge-info">{{ app.status }}</span>
+      </p>
+    </div>
+    {% if existing_apt and existing_apt.status == 'Scheduled' %}
+      <div>
+        <a href="{{ url_for('applicant.appointment_confirmation', app_id=app.id) }}" class="btn btn-primary btn-sm">
+          <i class="fas fa-receipt"></i> View Existing Appointment Slip
+        </a>
+      </div>
+    {% endif %}
+  </div>
+
+  {% if existing_apt and existing_apt.status == 'Scheduled' %}
+    <!-- Already Booked Banner -->
+    <div class="card" style="border-left: 4px solid var(--success-600);">
+      <div class="card-body" style="padding: 24px;">
+        <div style="display: flex; align-items: flex-start; gap: 16px;">
+          <div style="width: 44px; height: 44px; background: var(--success-50); color: var(--success-600); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div>
+            <h3 style="font-size: 18px; color: var(--slate-900);">Appointment Already Confirmed</h3>
+            <p style="font-size: 14px; color: var(--slate-600); margin: 6px 0 16px;">
+              You have already scheduled an appointment for this application. Reference: <strong>{{ existing_apt.appointment_number }}</strong> on <strong>{{ existing_apt.appointment_date.strftime('%d %B %Y') }}</strong> ({{ existing_apt.appointment_time }}).
+            </p>
+            <div style="display: flex; gap: 12px;">
+              <a href="{{ url_for('applicant.appointment_confirmation', app_id=app.id) }}" class="btn btn-primary">
+                <i class="fas fa-print"></i> Print Confirmation Slip
+              </a>
+              <a href="{{ url_for('applicant.dashboard') }}" class="btn btn-secondary">
+                Return to Dashboard
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <!-- Slot Selection Card -->
+    <div class="card">
+      <div class="card-header">
+        <h3><i class="far fa-calendar-alt" style="color: var(--primary-600);"></i> Select Available Date & Time Slot</h3>
+      </div>
+      <div class="card-body" style="padding: 28px;">
+        
+        <p style="font-size: 14px; color: var(--slate-600); margin-bottom: 24px;">
+          Select your preferred appointment date and time slot at the Passport Seva Kendra. To prevent overcrowding, each slot enforces a maximum capacity limit.
+        </p>
+
+        <form action="{{ url_for('applicant.appointment_schedule', app_id=app.id) }}" method="POST">
+          
+          {% if slots_by_date %}
+            {% for date_str, slots in slots_by_date.items() %}
+              <div style="margin-bottom: 28px; border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 18px; background: var(--surface-white);">
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid var(--slate-100); padding-bottom: 10px;">
+                  <h4 style="font-size: 15px; color: var(--primary-900); display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-calendar-day" style="color: var(--primary-500);"></i> {{ slots[0].slot_date.strftime('%A, %d %B %Y') }}
+                  </h4>
+                  <span style="font-size: 12px; color: var(--slate-500);">
+                    <i class="fas fa-map-marker-alt"></i> {{ slots[0].location }}
+                  </span>
+                </div>
+
+                <div class="slot-grid">
+                  {% for s in slots %}
+                    <label class="slot-radio-card {% if s.is_full %}disabled{% endif %}">
+                      <input type="radio" name="slot_id" value="{{ s.id }}" {% if s.is_full %}disabled{% endif %} required>
+                      <div class="slot-box">
+                        <div class="slot-time">{{ s.formatted_time }}</div>
+                        <div class="slot-capacity">
+                          {% if s.is_full %}
+                            <span style="color: var(--danger-600); font-weight: 700;">Full (0 seats)</span>
+                          {% else %}
+                            <span style="color: var(--success-600); font-weight: 600;">{{ s.available_seats }} seats available</span>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </label>
+                  {% endfor %}
+                </div>
+
+              </div>
+            {% endfor %}
+
+            <div style="margin-top: 32px; display: flex; justify-content: flex-end;">
+              <button type="submit" class="btn btn-primary btn-lg" onclick="return confirm('Confirm booking this appointment slot?');">
+                <i class="fas fa-check-circle"></i> Confirm Appointment Slot
+              </button>
+            </div>
+
+          {% else %}
+            <div style="text-align: center; padding: 48px 20px; color: var(--slate-400);">
+              <i class="far fa-calendar-times" style="font-size: 38px; margin-bottom: 12px; display: block;"></i>
+              <h4 style="color: var(--slate-700);">No Available Slots Found</h4>
+              <p style="font-size: 13px; color: var(--slate-500); margin-top: 4px;">Please check back later or contact the helpdesk.</p>
+            </div>
+          {% endif %}
+
+        </form>
+
+      </div>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

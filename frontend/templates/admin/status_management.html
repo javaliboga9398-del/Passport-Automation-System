@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Application Status Management — Admin{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+  
+  {% include 'components/sidebar.html' %}
+
+  <main class="admin-content">
+    
+    <div style="margin-bottom: 24px;">
+      <h1 style="font-size: 24px; color: var(--slate-900);">Application Status & Lifecycle Management</h1>
+      <p style="font-size: 13px; color: var(--slate-500); margin-top: 2px;">
+        Perform manual operational state transitions (e.g., dispatching printed passports or advancing stages)
+      </p>
+    </div>
+
+    <!-- Status Transition Control Form Card -->
+    <div class="card" style="margin-bottom: 28px;">
+      <div class="card-header">
+        <h3><i class="fas fa-sliders-h" style="color: var(--primary-600);"></i> Update Application Status</h3>
+      </div>
+      <div class="card-body" style="padding: 24px;">
+        <form action="{{ url_for('officer.status_management') }}" method="POST" onsubmit="return confirm('Confirm updating application status? The applicant will automatically receive an in-app notification.');">
+          
+          <div class="form-row">
+            
+            <div class="form-group" style="flex: 1.5;">
+              <label class="form-label" for="application_id">Select Application <span class="required">*</span></label>
+              <select name="application_id" id="application_id" class="form-select" required>
+                <option value="">-- Choose Application by ID / Applicant --</option>
+                {% for a in applications %}
+                  <option value="{{ a.id }}">
+                    {{ a.application_number }} &bull; {{ a.full_name }} (Current: {{ a.status }})
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="form-group" style="flex: 1;">
+              <label class="form-label" for="new_status">Target New Status <span class="required">*</span></label>
+              <select name="new_status" id="new_status" class="form-select" required>
+                {% for s in statuses %}
+                  <option value="{{ s }}">{{ s }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="remarks">Operational Remarks / Tracking Information</label>
+            <textarea name="remarks" id="remarks" class="form-control" rows="2" placeholder="e.g. Booklet printed on high-security press / Dispatched via Speed Post Tracking #SP9928172IN"></textarea>
+            <div class="form-text">These remarks will be recorded in the permanent audit trail and shown to the applicant.</div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end;">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-sync-alt"></i> Update Status & Notify Citizen
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- Active Applications Status Overview -->
+    <div class="card">
+      <div class="card-header">
+        <h3><i class="fas fa-tasks" style="color: var(--primary-600);"></i> Active Applications Status Overview</h3>
+      </div>
+      <div class="card-body" style="padding: 0;">
+        {% if applications %}
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Application Number</th>
+                  <th>Applicant Name</th>
+                  <th>Service & Scheme</th>
+                  <th>Current Status</th>
+                  <th>Last Updated</th>
+                  <th>Quick Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for a in applications %}
+                  <tr>
+                    <td><code>{{ a.application_number }}</code></td>
+                    <td style="font-weight: 600;">{{ a.full_name }}</td>
+                    <td>{{ a.service_type }} ({{ a.application_type }})</td>
+                    <td>
+                      <span class="badge {% if a.status == 'Approved' %}badge-success{% elif a.status == 'Submitted' %}badge-info{% elif a.status == 'Under Verification' %}badge-warning{% elif a.status == 'Dispatched' %}badge-dark{% elif a.status == 'Rejected' %}badge-danger{% elif a.status == 'Returned for Correction' %}badge-warning{% else %}badge-draft{% endif %}">
+                        {{ a.status }}
+                      </span>
+                    </td>
+                    <td style="font-size: 12px; color: var(--slate-500);">
+                      {{ a.updated_at.strftime('%d %b %Y, %H:%M') if a.updated_at else 'N/A' }}
+                    </td>
+                    <td>
+                      <a href="{{ url_for('officer.application_details', app_id=a.id) }}" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-eye"></i> View History
+                      </a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+  </main>
+
+</div>
+{% endblock %}

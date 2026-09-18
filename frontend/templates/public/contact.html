@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Contact & Helpdesk — Passport Automation System{% endblock %}
+
+{% block content %}
+<div class="container">
+  <ul class="breadcrumb">
+    <li><a href="{{ url_for('auth.index') }}"><i class="fas fa-home"></i> Home</a></li>
+    <li class="breadcrumb-separator">/</li>
+    <li>Contact & Helpdesk</li>
+  </ul>
+
+  <div style="margin-bottom: 32px;">
+    <h1>Citizen Helpdesk & Grievance Cell</h1>
+    <p style="font-size: 16px; color: var(--slate-600); margin-top: 6px;">
+      Find answers to common questions or reach out to your nearest Passport Seva Kendra (PSK)
+    </p>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
+    
+    <!-- Contact Info Cards -->
+    <div>
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-phone-volume" style="color: var(--primary-600);"></i> Regional PSK Contact Points</h3>
+        </div>
+        <div class="card-body">
+          <div style="display: flex; flex-direction: column; gap: 20px;">
+            
+            <div style="display: flex; gap: 14px;">
+              <div style="width: 40px; height: 40px; background: var(--primary-50); color: var(--primary-600); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
+                <i class="fas fa-map-marker-alt"></i>
+              </div>
+              <div>
+                <h4 style="font-size: 15px; color: var(--slate-800);">Central Passport Seva Kendra</h4>
+                <p style="font-size: 13px; color: var(--slate-600); margin-top: 4px;">
+                  1st Floor, Seva Bhavan, Outer Ring Road, Tech Corridor, Bengaluru - 560001
+                </p>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 14px;">
+              <div style="width: 40px; height: 40px; background: var(--success-50); color: var(--success-600); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
+                <i class="fas fa-envelope-open-text"></i>
+              </div>
+              <div>
+                <h4 style="font-size: 15px; color: var(--slate-800);">Electronic Enquiries</h4>
+                <p style="font-size: 13px; color: var(--slate-600); margin-top: 4px;">
+                  helpdesk@passport.gov | grievances@passport.gov
+                </p>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 14px;">
+              <div style="width: 40px; height: 40px; background: var(--warning-50); color: var(--warning-600); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
+                <i class="fas fa-phone-alt"></i>
+              </div>
+              <div>
+                <h4 style="font-size: 15px; color: var(--slate-800);">Citizen Helpline Hotline</h4>
+                <p style="font-size: 13px; color: var(--slate-600); margin-top: 4px;">
+                  Toll Free: 1800-258-1800 (Available 24x7 in multiple regional languages)
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Inquiry Form -->
+    <div>
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-paper-plane" style="color: var(--primary-600);"></i> Send an Enquiry</h3>
+        </div>
+        <div class="card-body">
+          <form onsubmit="alert('Thank you for reaching out. In this demonstration application, your inquiry has been simulated and logged.'); return false;">
+            <div class="form-group">
+              <label class="form-label">Applicant / Citizen Name</label>
+              <input type="text" class="form-control" placeholder="Your Name" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input type="email" class="form-control" placeholder="your.email@example.com" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Passport Application ID (Optional)</label>
+              <input type="text" class="form-control" placeholder="e.g. PAS202600001">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Nature of Inquiry / Grievance</label>
+              <textarea class="form-control" rows="3" placeholder="Describe your query..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">
+              <i class="fas fa-paper-plane"></i> Submit Inquiry
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

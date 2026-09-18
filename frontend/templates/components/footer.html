@@ -1,0 +1,50 @@
+<footer class="site-footer no-print">
+  <div class="container">
+    <div class="footer-grid">
+      
+      <div class="footer-col">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;">
+          <div style="width: 32px; height: 32px; background: var(--primary-600); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #fff;">
+            <i class="fas fa-passport"></i>
+          </div>
+          <h4 style="margin: 0; font-size: 16px;">Passport Automation System</h4>
+        </div>
+        <p>A unified digital platform automating the end-to-end lifecycle of passport applications, multi-point document verification, biometric appointment scheduling, and dispatch tracking.</p>
+        <p style="margin-top: 10px; font-size: 12px; color: var(--slate-400);">Designed and engineered for Software Engineering Lab Viva & Demonstration.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Quick Services</h4>
+        <ul class="footer-links">
+          <li><a href="{{ url_for('auth.index') }}">Portal Home</a></li>
+          <li><a href="{{ url_for('auth.login') }}">Citizen Login</a></li>
+          <li><a href="{{ url_for('auth.register') }}">New Registration</a></li>
+          <li><a href="{{ url_for('auth.index') }}#track-section">Track Application</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>System Features</h4>
+        <ul class="footer-links">
+          <li><a href="{{ url_for('auth.about') }}">Three-Tier Architecture</a></li>
+          <li><a href="{{ url_for('auth.about') }}#features">Document Verification</a></li>
+          <li><a href="{{ url_for('auth.about') }}#slots">Slot Scheduling Lock</a></li>
+          <li><a href="{{ url_for('auth.about') }}#audit">Audit History Logs</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Help & Support</h4>
+        <p><i class="fas fa-phone-alt" style="margin-right: 8px; color: var(--primary-400);"></i> Toll Free: 1800-258-1800</p>
+        <p style="margin-top: 8px;"><i class="fas fa-envelope" style="margin-right: 8px; color: var(--primary-400);"></i> support@passport.gov</p>
+        <p style="margin-top: 8px;"><i class="fas fa-clock" style="margin-right: 8px; color: var(--primary-400);"></i> Mon-Sat: 09:00 AM - 05:30 PM</p>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <div>&copy; 2026 Passport Automation System. All Rights Reserved. (Academic Lab Demonstration)</div>
+      <div>Engineered with Python Flask, MySQL, and Modern Vanilla CSS</div>
+    </div>
+  </div>
+</footer>

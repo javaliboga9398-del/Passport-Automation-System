@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}Application Dossier — {{ app.application_number or 'Draft' }}{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 900px;">
+  
+  <ul class="breadcrumb no-print">
+    <li><a href="{{ url_for('applicant.dashboard') }}"><i class="fas fa-home"></i> Dashboard</a></li>
+    <li class="breadcrumb-separator">/</li>
+    <li><a href="{{ url_for('applicant.my_applications') }}">My Applications</a></li>
+    <li class="breadcrumb-separator">/</li>
+    <li>Application Details</li>
+  </ul>
+
+  <!-- Dossier Header -->
+  <div style="background: var(--surface-white); border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 24px 32px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+    <div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <h2 style="font-size: 22px; color: var(--primary-900); margin: 0;">
+          {{ app.application_number or 'Draft Application' }}
+        </h2>
+        <span class="badge {% if app.status == 'Approved' %}badge-success{% elif app.status == 'Submitted' %}badge-info{% elif app.status == 'Under Verification' %}badge-warning{% elif app.status == 'Dispatched' %}badge-dark{% elif app.status == 'Rejected' %}badge-danger{% elif app.status == 'Returned for Correction' %}badge-warning{% else %}badge-draft{% endif %}">
+          {{ app.status }}
+        </span>
+      </div>
+      <p style="font-size: 13px; color: var(--slate-500); margin-top: 4px;">
+        Submitted: {{ app.submitted_at.strftime('%d %b %Y, %I:%M %p') if app.submitted_at else 'In Progress (Draft)' }} &bull; Service: {{ app.service_type }} ({{ app.application_type }})
+      </p>
+    </div>
+
+    <div class="no-print" style="display: flex; gap: 10px;">
+      <a href="{{ url_for('applicant.status_tracking', app_id=app.id) }}" class="btn btn-outline btn-sm">
+        <i class="fas fa-route"></i> Track Status
+      </a>
+      <button type="button" class="btn btn-secondary btn-sm" onclick="window.print();">
+        <i class="fas fa-print"></i> Print Dossier
+      </button>
+    </div>
+  </div>
+
+  <!-- Section 1: Personal & Contact -->
+  <div class="card">
+    <div class="card-header">
+      <h3><i class="far fa-user" style="color: var(--primary-600);"></i> Applicant Identity Particulars</h3>
+    </div>
+    <div class="card-body">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px; font-size: 14px;">
+        <div>
+          <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Full Legal Name</span>
+          <div style="font-weight: 600; color: var(--slate-800); margin-top: 2px;">{{ app.full_name }}</div>
+        </div>
+        <div>
+          <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Date of Birth</span>
+          <div style="font-weight: 600; color: var(--slate-800); margin-top: 2px;">{{ app.date_of_birth.strftime('%d %B %Y') if app.date_of_birth else 'N/A' }}</div>
+        </div>
+        <div>
+          <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Gender</span>
+          <div style="font-weight: 600; color: var(--slate-800); margin-top: 2px;">{{ app.gender }}</div>
+        </div>
+        <div>
+          <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Place of Birth</span>
+          <div style="font-weight: 600; color: var(--slate-800); margin-top: 2px;">{{ app.place_of_birth }}</div>
+        </div>
+        <div>
+          <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Mobile Number</span>
+          <div style="font-weight: 600; color: var(--slate-800); margin-top: 2px;">{{ app.mobile_number }}</div>
+        </div>
+        <div>
+          <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Email Address</span>
+          <div style="font-weight: 600; color: var(--slate-800); margin-top: 2px;">{{ app.email }}</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--slate-100);">
+        <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Registered Address</span>
+        <div style="font-weight: 600; color: var(--slate-800); margin-top: 2px; font-size: 14px;">
+          {{ app.house_no }}, {{ app.street }}, {{ app.city }}, {{ app.district }}, {{ app.state }} - {{ app.pincode }}, {{ app.country }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2: Passport Service & Appointment -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+    
+    <div class="card">
+      <div class="card-header">
+        <h3><i class="fas fa-passport" style="color: var(--primary-600);"></i> Passport Specification</h3>
+      </div>
+      <div class="card-body" style="font-size: 13px;">
+        <table style="width: 100%; line-height: 2;">
+          <tr>
+            <td style="color: var(--slate-500);">Service Type:</td>
+            <td style="font-weight: 600; color: var(--slate-800);">{{ app.service_type }}</td>
+          </tr>
+          <tr>
+            <td style="color: var(--slate-500);">Application Scheme:</td>
+            <td style="font-weight: 600; color: var(--slate-800);">{{ app.application_type }}</td>
+          </tr>
+          <tr>
+            <td style="color: var(--slate-500);">Booklet Type:</td>
+            <td style="font-weight: 600; color: var(--slate-800);">{{ app.booklet_type }}</td>
+          </tr>
+          {% if app.previous_passport_number %}
+            <tr>
+              <td style="color: var(--slate-500);">Previous Passport:</td>
+              <td style="font-weight: 700; color: var(--primary-800); font-family: var(--font-mono);">{{ app.previous_passport_number }}</td>
+            </tr>
+          {% endif %}
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3><i class="far fa-calendar-check" style="color: var(--primary-600);"></i> Scheduled Appointment</h3>
+      </div>
+      <div class="card-body" style="font-size: 13px;">
+        {% if appointment %}
+          <table style="width: 100%; line-height: 2;">
+            <tr>
+              <td style="color: var(--slate-500);">Token Reference:</td>
+              <td style="font-weight: 700; color: var(--primary-800); font-family: var(--font-mono);">{{ appointment.appointment_number }}</td>
+            </tr>
+            <tr>
+              <td style="color: var(--slate-500);">Date & Time:</td>
+              <td style="font-weight: 600; color: var(--slate-800);">{{ appointment.appointment_date.strftime('%d %b %Y') }} ({{ appointment.appointment_time }})</td>
+            </tr>
+            <tr>
+              <td style="color: var(--slate-500);">Reporting Venue:</td>
+              <td style="font-weight: 600; color: var(--slate-800);">{{ appointment.location }}</td>
+            </tr>
+          </table>
+          <div style="margin-top: 12px;" class="no-print">
+            <a href="{{ url_for('applicant.appointment_confirmation', app_id=app.id) }}" class="btn btn-outline btn-sm">
+              <i class="fas fa-print"></i> Print Confirmation Slip
+            </a>
+          </div>
+        {% else %}
+          <p style="color: var(--slate-400); margin: 12px 0;">No appointment booked for this application yet.</p>
+          {% if app.status != 'Draft' %}
+            <a href="{{ url_for('applicant.appointment_schedule', app_id=app.id) }}" class="btn btn-primary btn-sm no-print">
+              Schedule Appointment
+            </a>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Section 3: Attached Documents -->
+  <div class="card">
+    <div class="card-header">
+      <h3><i class="fas fa-paperclip" style="color: var(--primary-600);"></i> Attached Verification Documents</h3>
+    </div>
+    <div class="card-body" style="padding: 0;">
+      {% if documents %}
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Document Category</th>
+                <th>File Name</th>
+                <th>Size</th>
+                <th>Uploaded Date</th>
+                <th>Verification Status</th>
+                <th class="no-print">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for d in documents %}
+                <tr>
+                  <td><strong>{{ d.doc_type }}</strong></td>
+                  <td>{{ d.original_filename }}</td>
+                  <td>{{ d.formatted_size }}</td>
+                  <td>{{ d.uploaded_at.strftime('%d %b %Y') }}</td>
+                  <td>
+                    <span class="badge {% if d.verification_status == 'Verified' %}badge-success{% elif d.verification_status == 'Rejected' %}badge-danger{% else %}badge-info{% endif %}">
+                      {{ d.verification_status }}
+                    </span>
+                    {% if d.rejection_reason %}
+                      <div style="font-size: 11px; color: var(--danger-600); margin-top: 2px;">
+                        Reason: {{ d.rejection_reason }}
+                      </div>
+                    {% endif %}
+                  </td>
+                  <td class="no-print">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="previewDocument('{{ url_for('uploaded_file', filename=d.stored_filename) }}', '{{ d.original_filename }}', '{{ d.mime_type }}')">
+                      <i class="fas fa-eye"></i> View
+                    </button>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p style="padding: 24px; color: var(--slate-400); text-align: center;">No documents uploaded.</p>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+
+<!-- Document Preview Modal Dialog -->
+<div class="modal-overlay" id="doc_preview_modal">
+  <div class="modal-dialog" style="max-width: 700px;">
+    <div class="modal-header">
+      <h4 id="preview_modal_title">Document Preview</h4>
+      <button type="button" class="modal-close" onclick="closeModal('doc_preview_modal')">&times;</button>
+    </div>
+    <div class="modal-body" id="preview_content" style="padding: 16px;"></div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" onclick="closeModal('doc_preview_modal')">Close Preview</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+{% endblock %}

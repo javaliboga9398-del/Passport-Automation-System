@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications Inbox — Passport Automation System{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 840px;">
+  
+  <ul class="breadcrumb">
+    <li><a href="{{ url_for('applicant.dashboard') }}"><i class="fas fa-home"></i> Dashboard</a></li>
+    <li class="breadcrumb-separator">/</li>
+    <li>Notifications Center</li>
+  </ul>
+
+  <div style="margin-bottom: 24px;">
+    <h2 style="font-size: 24px; color: var(--primary-900);">In-App Notifications</h2>
+    <p style="font-size: 13px; color: var(--slate-600); margin-top: 4px;">
+      Direct system updates regarding application submission, document checks, and status changes
+    </p>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3><i class="far fa-bell" style="color: var(--primary-600);"></i> All Notifications</h3>
+      <span class="badge badge-info">{{ notifications|length }} Total</span>
+    </div>
+    <div class="card-body" style="padding: 20px;">
+      {% if notifications %}
+        <div class="notif-list">
+          {% for n in notifications %}
+            <div class="notif-card" style="padding: 16px;">
+              <div class="notif-icon {{ n.type }}">
+                <i class="fas {% if n.type == 'success' %}fa-check{% elif n.type == 'danger' %}fa-times{% elif n.type == 'warning' %}fa-exclamation{% else %}fa-info{% endif %}"></i>
+              </div>
+              <div class="notif-body" style="flex: 1;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                  <h5>{{ n.title }}</h5>
+                  <span class="notif-time" style="margin: 0;">{{ n.created_at.strftime('%d %b %Y, %I:%M %p') }}</span>
+                </div>
+                <p style="margin-top: 6px;">{{ n.message }}</p>
+                {% if n.application_id %}
+                  <div style="margin-top: 8px;">
+                    <a href="{{ url_for('applicant.status_tracking', app_id=n.application_id) }}" class="btn btn-outline btn-sm" style="font-size: 11px; padding: 2px 8px;">
+                      <i class="fas fa-route"></i> Track Related Application
+                    </a>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div style="text-align: center; padding: 48px 20px; color: var(--slate-400);">
+          <i class="far fa-bell-slash" style="font-size: 36px; margin-bottom: 12px; display: block;"></i>
+          <h4>No Notifications Yet</h4>
+          <p style="font-size: 13px; margin-top: 4px;">You are all caught up!</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

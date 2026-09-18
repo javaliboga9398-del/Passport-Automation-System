@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+
+{% block title %}Passport Application Form (Step {{ step }} of 5) — Passport Automation System{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 860px;">
+  
+  <ul class="breadcrumb">
+    <li><a href="{{ url_for('applicant.dashboard') }}"><i class="fas fa-home"></i> Dashboard</a></li>
+    <li class="breadcrumb-separator">/</li>
+    <li><a href="{{ url_for('applicant.my_applications') }}">My Applications</a></li>
+    <li class="breadcrumb-separator">/</li>
+    <li>Application Form</li>
+  </ul>
+
+  <!-- Progress Steps -->
+  <div class="wizard-steps">
+    <div class="wizard-step {% if step == 1 %}active{% elif step > 1 %}completed{% endif %}">
+      <div class="wizard-step-circle">
+        {% if step > 1 %}<i class="fas fa-check"></i>{% else %}1{% endif %}
+      </div>
+      <div class="wizard-step-title">Personal</div>
+    </div>
+
+    <div class="wizard-step {% if step == 2 %}active{% elif step > 2 %}completed{% endif %}">
+      <div class="wizard-step-circle">
+        {% if step > 2 %}<i class="fas fa-check"></i>{% else %}2{% endif %}
+      </div>
+      <div class="wizard-step-title">Contact</div>
+    </div>
+
+    <div class="wizard-step {% if step == 3 %}active{% elif step > 3 %}completed{% endif %}">
+      <div class="wizard-step-circle">
+        {% if step > 3 %}<i class="fas fa-check"></i>{% else %}3{% endif %}
+      </div>
+      <div class="wizard-step-title">Address</div>
+    </div>
+
+    <div class="wizard-step {% if step == 4 %}active{% elif step > 4 %}completed{% endif %}">
+      <div class="wizard-step-circle">
+        {% if step > 4 %}<i class="fas fa-check"></i>{% else %}4{% endif %}
+      </div>
+      <div class="wizard-step-title">Passport</div>
+    </div>
+
+    <div class="wizard-step {% if step == 5 %}active{% elif step > 5 %}completed{% endif %}">
+      <div class="wizard-step-circle">5</div>
+      <div class="wizard-step-title">Declaration</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" style="background: var(--surface-white); padding: 20px 28px;">
+      <div>
+        <div style="font-size: 12px; color: var(--primary-600); font-weight: 700; text-transform: uppercase;">
+          Step {{ step }} of 5
+        </div>
+        <h3 style="font-size: 19px; margin-top: 2px;">
+          {% if step == 1 %}Step 1: Personal Details
+          {% elif step == 2 %}Step 2: Contact Details
+          {% elif step == 3 %}Step 3: Residential Address Details
+          {% elif step == 4 %}Step 4: Passport & Service Scheme Details
+          {% elif step == 5 %}Step 5: Citizen Self-Declaration
+          {% endif %}
+        </h3>
+      </div>
+      <div>
+        <span class="badge badge-draft">Draft Auto-Saved</span>
+      </div>
+    </div>
+
+    <div class="card-body" style="padding: 28px 32px;">
+      <form action="{{ url_for('applicant.form_wizard', app_id=app.id) }}" method="POST" id="wizardStepForm">
+        <input type="hidden" name="step" value="{{ step }}">
+
+        <!-- STEP 1: PERSONAL DETAILS -->
+        {% if step == 1 %}
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="full_name">Full Legal Name <span class="required">*</span></label>
+              <input type="text" name="full_name" id="full_name" class="form-control" value="{{ app.full_name or '' }}" required>
+              <div class="form-text">As it should appear on your passport booklet.</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="date_of_birth">Date of Birth <span class="required">*</span></label>
+              <input type="date" name="date_of_birth" id="date_of_birth" class="form-control" value="{{ app.date_of_birth.strftime('%Y-%m-%d') if app.date_of_birth else '' }}" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Gender <span class="required">*</span></label>
+              <select name="gender" class="form-select" required>
+                <option value="Male" {% if app.gender == 'Male' %}selected{% endif %}>Male</option>
+                <option value="Female" {% if app.gender == 'Female' %}selected{% endif %}>Female</option>
+                <option value="Other" {% if app.gender == 'Other' %}selected{% endif %}>Other</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="place_of_birth">Place of Birth (City / Village) <span class="required">*</span></label>
+              <input type="text" name="place_of_birth" id="place_of_birth" class="form-control" value="{{ app.place_of_birth or '' }}" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="nationality">Nationality <span class="required">*</span></label>
+              <input type="text" name="nationality" id="nationality" class="form-control" value="{{ app.nationality or 'Indian' }}" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Marital Status</label>
+              <select name="marital_status" class="form-select">
+                <option value="Single" {% if app.marital_status == 'Single' %}selected{% endif %}>Single</option>
+                <option value="Married" {% if app.marital_status == 'Married' %}selected{% endif %}>Married</option>
+                <option value="Divorced" {% if app.marital_status == 'Divorced' %}selected{% endif %}>Divorced</option>
+                <option value="Widowed" {% if app.marital_status == 'Widowed' %}selected{% endif %}>Widowed</option>
+              </select>
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- STEP 2: CONTACT DETAILS -->
+        {% if step == 2 %}
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="mobile_number">Primary Mobile Number <span class="required">*</span></label>
+              <input type="tel" name="mobile_number" id="mobile_number" class="form-control" value="{{ app.mobile_number or '' }}" required>
+              <div class="form-text">SMS alerts regarding status will be delivered here.</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="email">Email Address <span class="required">*</span></label>
+              <input type="email" name="email" id="email" class="form-control" value="{{ app.email or '' }}" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="alternate_contact">Emergency / Alternate Contact Number</label>
+            <input type="tel" name="alternate_contact" id="alternate_contact" class="form-control" value="{{ app.alternate_contact or '' }}" placeholder="Family member or relative">
+          </div>
+        {% endif %}
+
+        <!-- STEP 3: ADDRESS DETAILS -->
+        {% if step == 3 %}
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="house_no">House / Flat / Door Number</label>
+              <input type="text" name="house_no" id="house_no" class="form-control" value="{{ app.house_no or '' }}" placeholder="e.g. Flat 402, Greenfield Apts">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="street">Street / Locality / Landmark</label>
+              <input type="text" name="street" id="street" class="form-control" value="{{ app.street or '' }}" placeholder="e.g. M.G. Road">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="city">City / Town / Village <span class="required">*</span></label>
+              <input type="text" name="city" id="city" class="form-control" value="{{ app.city or '' }}" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="district">District <span class="required">*</span></label>
+              <input type="text" name="district" id="district" class="form-control" value="{{ app.district or '' }}" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="state">State / Union Territory <span class="required">*</span></label>
+              <input type="text" name="state" id="state" class="form-control" value="{{ app.state or '' }}" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="pincode">PIN Code (6 Digits) <span class="required">*</span></label>
+              <input type="text" name="pincode" id="pincode" class="form-control" pattern="[0-9]{6}" value="{{ app.pincode or '' }}" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="country">Country</label>
+              <input type="text" name="country" id="country" class="form-control" value="{{ app.country or 'India' }}" readonly>
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- STEP 4: PASSPORT DETAILS -->
+        {% if step == 4 %}
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Service Type</label>
+              <select name="service_type" id="service_type" class="form-select">
+                <option value="Fresh" {% if app.service_type == 'Fresh' %}selected{% endif %}>Fresh Passport</option>
+                <option value="Renewal" {% if app.service_type == 'Renewal' %}selected{% endif %}>Renewal / Re-issue</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Application Scheme</label>
+              <select name="application_type" class="form-select">
+                <option value="Normal" {% if app.application_type == 'Normal' %}selected{% endif %}>Normal</option>
+                <option value="Tatkaal" {% if app.application_type == 'Tatkaal' %}selected{% endif %}>Tatkaal (Expedited)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Booklet Type</label>
+              <select name="booklet_type" class="form-select">
+                <option value="36 Pages" {% if app.booklet_type == '36 Pages' %}selected{% endif %}>36 Pages (Standard)</option>
+                <option value="60 Pages" {% if app.booklet_type == '60 Pages' %}selected{% endif %}>60 Pages (Jumbo)</option>
+              </select>
+            </div>
+
+            <div class="form-group" id="prev_passport_group">
+              <label class="form-label" for="previous_passport_number">Previous Passport Number</label>
+              <input type="text" name="previous_passport_number" class="form-control" value="{{ app.previous_passport_number or '' }}" placeholder="Required if Renewal">
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- STEP 5: DECLARATION -->
+        {% if step == 5 %}
+          <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-sm); padding: 20px; margin-bottom: 24px;">
+            <h4 style="font-size: 15px; margin-bottom: 12px; color: var(--primary-900);">
+              <i class="fas fa-balance-scale" style="margin-right: 6px;"></i> Applicant Self-Declaration
+            </h4>
+            <p style="font-size: 13px; color: var(--slate-600); line-height: 1.6;">
+              I hereby declare that all the information given by me in this application is true, accurate, and complete. I have not suppressed or concealed any material information. I understand that making a false statement or concealing any material information is an offence punishable under the Passports Act, 1967.
+            </p>
+          </div>
+
+          <div class="form-check" style="margin-bottom: 24px;">
+            <input type="checkbox" name="declaration_accepted" id="declaration_accepted" class="form-check-input" value="1" {% if app.declaration_accepted %}checked{% endif %} required>
+            <label for="declaration_accepted" class="form-check-label" style="font-weight: 600; font-size: 14px; color: var(--slate-800);">
+              I accept the self-declaration and agree to proceed to document upload.
+            </label>
+          </div>
+        {% endif %}
+
+        <!-- Navigation Buttons -->
+        <div class="wizard-actions">
+          <div>
+            {% if step > 1 %}
+              <button type="submit" name="action" value="prev" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Previous
+              </button>
+            {% else %}
+              <a href="{{ url_for('applicant.dashboard') }}" class="btn btn-secondary">Dashboard</a>
+            {% endif %}
+          </div>
+
+          <div style="display: flex; gap: 12px;">
+            <button type="submit" name="action" value="save_draft" class="btn btn-outline">
+              <i class="far fa-save"></i> Save Draft
+            </button>
+
+            {% if step < 5 %}
+              <button type="submit" name="action" value="next" class="btn btn-primary">
+                Next <i class="fas fa-arrow-right"></i>
+              </button>
+            {% else %}
+              <button type="submit" name="action" value="next" id="submit_application_btn" class="btn btn-success" {% if not app.declaration_accepted %}disabled{% endif %}>
+                Proceed to Document Upload <i class="fas fa-upload"></i>
+              </button>
+            {% endif %}
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/form_wizard.js') }}"></script>
+{% endblock %}

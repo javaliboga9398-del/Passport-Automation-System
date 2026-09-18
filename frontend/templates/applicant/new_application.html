@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Start New Passport Application — Passport Automation System{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 780px;">
+  <ul class="breadcrumb">
+    <li><a href="{{ url_for('applicant.dashboard') }}"><i class="fas fa-home"></i> Dashboard</a></li>
+    <li class="breadcrumb-separator">/</li>
+    <li>New Passport Application</li>
+  </ul>
+
+  <div class="card">
+    <div class="card-header" style="background: var(--surface-white); padding: 24px 32px;">
+      <div>
+        <h2 style="font-size: 22px; color: var(--primary-900);">Select Passport Service Type</h2>
+        <p style="font-size: 13px; color: var(--slate-500); margin-top: 4px;">Choose the appropriate category before starting the form wizard</p>
+      </div>
+    </div>
+
+    <div class="card-body" style="padding: 32px;">
+      <form action="{{ url_for('applicant.new_application') }}" method="POST">
+        
+        <!-- Service Type Selection -->
+        <div class="form-group">
+          <label class="form-label">Service Type <span class="required">*</span></label>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px;">
+            
+            <label style="border: 2px solid var(--slate-200); border-radius: var(--radius-md); padding: 18px; cursor: pointer; display: flex; align-items: flex-start; gap: 12px; transition: var(--transition);" class="service-type-option">
+              <input type="radio" name="service_type" id="service_type_fresh" value="Fresh" checked class="form-check-input" style="margin-top: 3px;">
+              <div>
+                <strong style="display: block; font-size: 15px; color: var(--slate-800);">Fresh Passport</strong>
+                <span style="font-size: 12px; color: var(--slate-500);">Applying for an Indian passport for the very first time.</span>
+              </div>
+            </label>
+
+            <label style="border: 2px solid var(--slate-200); border-radius: var(--radius-md); padding: 18px; cursor: pointer; display: flex; align-items: flex-start; gap: 12px; transition: var(--transition);" class="service-type-option">
+              <input type="radio" name="service_type" id="service_type_renewal" value="Renewal" class="form-check-input" style="margin-top: 3px;">
+              <div>
+                <strong style="display: block; font-size: 15px; color: var(--slate-800);">Re-issue / Renewal</strong>
+                <span style="font-size: 12px; color: var(--slate-500);">Existing passport expired, exhausted pages, or damaged.</span>
+              </div>
+            </label>
+
+          </div>
+        </div>
+
+        <!-- Application Scheme -->
+        <div class="form-group" style="margin-top: 24px;">
+          <label class="form-label">Processing Scheme <span class="required">*</span></label>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px;">
+            
+            <label style="border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 16px; cursor: pointer; display: flex; align-items: flex-start; gap: 12px;">
+              <input type="radio" name="application_type" value="Normal" checked class="form-check-input" style="margin-top: 3px;">
+              <div>
+                <strong style="font-size: 14px; color: var(--slate-800);">Normal Scheme</strong>
+                <span style="display: block; font-size: 12px; color: var(--slate-500);">Standard processing timeline (15-30 days).</span>
+              </div>
+            </label>
+
+            <label style="border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 16px; cursor: pointer; display: flex; align-items: flex-start; gap: 12px;">
+              <input type="radio" name="application_type" value="Tatkaal" class="form-check-input" style="margin-top: 3px;">
+              <div>
+                <strong style="font-size: 14px; color: var(--slate-800);">Tatkaal Scheme</strong>
+                <span style="display: block; font-size: 12px; color: var(--slate-500);">Expedited urgent processing (1-3 days).</span>
+              </div>
+            </label>
+
+          </div>
+        </div>
+
+        <!-- Booklet Type -->
+        <div class="form-group" style="margin-top: 24px;">
+          <label class="form-label">Booklet Type <span class="required">*</span></label>
+          <div style="display: flex; gap: 24px; padding-top: 6px;">
+            <label class="form-check">
+              <input type="radio" name="booklet_type" value="36 Pages" checked class="form-check-input">
+              <span class="form-check-label"><strong>36 Pages</strong> (Standard frequent traveler)</span>
+            </label>
+            <label class="form-check">
+              <input type="radio" name="booklet_type" value="60 Pages" class="form-check-input">
+              <span class="form-check-label"><strong>60 Pages</strong> (Jumbo for extensive travel)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Previous Passport Number (Toggled if renewal) -->
+        <div class="form-group" id="prev_passport_box" style="display: none; margin-top: 24px; background: var(--slate-50); padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--slate-200);">
+          <label class="form-label" for="previous_passport_number">Previous Passport Number <span class="required">*</span></label>
+          <input type="text" name="previous_passport_number" id="previous_passport_number" class="form-control" placeholder="e.g. Z1098273" style="max-width: 320px; font-family: var(--font-mono); text-transform: uppercase;">
+          <div class="form-text">Provide your most recently issued expired or damaged passport booklet number.</div>
+        </div>
+
+        <div style="margin-top: 36px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--slate-200); padding-top: 24px;">
+          <a href="{{ url_for('applicant.dashboard') }}" class="btn btn-secondary">Cancel</a>
+          <button type="submit" class="btn btn-primary btn-lg">
+            Continue to Application Form <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+const freshRadio = document.getElementById('service_type_fresh');
+const renewalRadio = document.getElementById('service_type_renewal');
+const prevBox = document.getElementById('prev_passport_box');
+const prevInput = document.getElementById('previous_passport_number');
+
+function toggleRenewal() {
+  if (renewalRadio.checked) {
+    prevBox.style.display = 'block';
+    prevInput.required = true;
+  } else {
+    prevBox.style.display = 'none';
+    prevInput.required = false;
+  }
+}
+
+freshRadio.addEventListener('change', toggleRenewal);
+renewalRadio.addEventListener('change', toggleRenewal);
+</script>
+{% endblock %}

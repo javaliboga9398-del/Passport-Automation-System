@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}All Applications — Passport Automation System{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+  
+  {% include 'components/sidebar.html' %}
+
+  <main class="admin-content">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 14px;">
+      <div>
+        <h1 style="font-size: 24px; color: var(--slate-900);">Passport Applications Registry</h1>
+        <p style="font-size: 13px; color: var(--slate-500); margin-top: 2px;">
+          Filter, search, inspect dossiers, and initiate multi-point verification
+        </p>
+      </div>
+      <div>
+        <a href="{{ url_for('officer.reports') }}" class="btn btn-outline btn-sm">
+          <i class="fas fa-file-export"></i> Export Report
+        </a>
+      </div>
+    </div>
+
+    <!-- Filter & Search Toolbar -->
+    <div class="card" style="margin-bottom: 24px;">
+      <div class="card-body" style="padding: 18px 24px;">
+        <form action="{{ url_for('officer.applications') }}" method="GET" style="display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end;">
+          
+          <div style="flex: 1.5; min-width: 220px;">
+            <label class="form-label" style="font-size: 12px;">Search ID, Name, Email, or Mobile</label>
+            <div style="position: relative;">
+              <i class="fas fa-search" style="position: absolute; left: 12px; top: 11px; color: var(--slate-400);"></i>
+              <input type="text" name="q" class="form-control form-control-sm" style="padding-left: 34px;" placeholder="Search..." value="{{ query_text }}">
+            </div>
+          </div>
+
+          <div style="flex: 1; min-width: 170px;">
+            <label class="form-label" style="font-size: 12px;">Filter Status</label>
+            <select name="status" class="form-select form-select-sm">
+              <option value="">All Statuses</option>
+              <option value="Submitted" {% if status_filter == 'Submitted' %}selected{% endif %}>Submitted</option>
+              <option value="Under Verification" {% if status_filter == 'Under Verification' %}selected{% endif %}>Under Verification</option>
+              <option value="Approved" {% if status_filter == 'Approved' %}selected{% endif %}>Approved</option>
+              <option value="Printed" {% if status_filter == 'Printed' %}selected{% endif %}>Printed</option>
+              <option value="Dispatched" {% if status_filter == 'Dispatched' %}selected{% endif %}>Dispatched</option>
+              <option value="Returned for Correction" {% if status_filter == 'Returned for Correction' %}selected{% endif %}>Returned for Correction</option>
+              <option value="Rejected" {% if status_filter == 'Rejected' %}selected{% endif %}>Rejected</option>
+              <option value="Draft" {% if status_filter == 'Draft' %}selected{% endif %}>Draft</option>
+            </select>
+          </div>
+
+          <div style="flex: 1; min-width: 140px;">
+            <label class="form-label" style="font-size: 12px;">From Date</label>
+            <input type="date" name="date_from" class="form-control form-control-sm" value="{{ date_from }}">
+          </div>
+
+          <div style="flex: 1; min-width: 140px;">
+            <label class="form-label" style="font-size: 12px;">To Date</label>
+            <input type="date" name="date_to" class="form-control form-control-sm" value="{{ date_to }}">
+          </div>
+
+          <div style="display: flex; gap: 8px;">
+            <button type="submit" class="btn btn-primary btn-sm">
+              <i class="fas fa-filter"></i> Apply
+            </button>
+            <a href="{{ url_for('officer.applications') }}" class="btn btn-secondary btn-sm" title="Reset Filters">
+              <i class="fas fa-redo"></i> Reset
+            </a>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- Applications Table -->
+    <div class="card">
+      <div class="card-header">
+        <h3>
+          <i class="fas fa-list" style="color: var(--primary-600);"></i> Applications List
+          <span style="font-size: 12px; font-weight: 500; color: var(--slate-500); margin-left: 6px;">({{ applications|length }} matching)</span>
+        </h3>
+      </div>
+      <div class="card-body" style="padding: 0;">
+        {% if applications %}
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Application ID</th>
+                  <th>Applicant Name & Email</th>
+                  <th>Scheme & Service</th>
+                  <th>Status</th>
+                  <th>Submission Date</th>
+                  <th>Appointment</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for a in applications %}
+                  <tr>
+                    <td>
+                      {% if a.application_number %}
+                        <code>{{ a.application_number }}</code>
+                      {% else %}
+                        <span style="color: var(--slate-400); font-style: italic;">Draft</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      <div style="font-weight: 600; color: var(--slate-800);">{{ a.full_name or 'N/A' }}</div>
+                      <div style="font-size: 12px; color: var(--slate-500);">{{ a.email or 'N/A' }} &bull; {{ a.mobile_number or '' }}</div>
+                    </td>
+                    <td>
+                      <div>{{ a.service_type }}</div>
+                      <span class="badge {% if a.application_type == 'Tatkaal' %}badge-danger{% else %}badge-primary{% endif %}" style="font-size: 10px; padding: 2px 6px;">
+                        {{ a.application_type }}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="badge {% if a.status == 'Approved' %}badge-success{% elif a.status == 'Submitted' %}badge-info{% elif a.status == 'Under Verification' %}badge-warning{% elif a.status == 'Dispatched' %}badge-dark{% elif a.status == 'Rejected' %}badge-danger{% elif a.status == 'Returned for Correction' %}badge-warning{% else %}badge-draft{% endif %}">
+                        {{ a.status }}
+                      </span>
+                    </td>
+                    <td>
+                      {{ a.submitted_at.strftime('%d %b %Y, %H:%M') if a.submitted_at else 'In Progress' }}
+                    </td>
+                    <td>
+                      {% if a.appointment %}
+                        <div style="font-size: 12px; font-weight: 600; color: var(--primary-700);">
+                          {{ a.appointment.appointment_date.strftime('%d %b %Y') }}
+                        </div>
+                        <div style="font-size: 11px; color: var(--slate-500);">
+                          {{ a.appointment.appointment_time }}
+                        </div>
+                      {% else %}
+                        <span style="font-size: 12px; color: var(--slate-400);">Not Booked</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      <div style="display: flex; gap: 6px;">
+                        {% if a.status in ['Submitted', 'Under Verification'] %}
+                          <a href="{{ url_for('officer.verification', app_id=a.id) }}" class="btn btn-primary btn-sm" title="Verify Application & Docs">
+                            <i class="fas fa-check-double"></i> Verify
+                          </a>
+                        {% endif %}
+                        <a href="{{ url_for('officer.application_details', app_id=a.id) }}" class="btn btn-secondary btn-sm" title="View Dossier">
+                          <i class="fas fa-eye"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div style="text-align: center; padding: 48px 20px; color: var(--slate-400);">
+            <i class="fas fa-search" style="font-size: 36px; margin-bottom: 12px; display: block;"></i>
+            <h4>No Applications Match Filter Criteria</h4>
+            <p style="font-size: 13px; margin-top: 4px;">Try clearing filters or search parameters.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+  </main>
+
+</div>
+{% endblock %}

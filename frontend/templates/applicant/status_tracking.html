@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Track Application Status — Passport Automation System{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 900px;">
+  
+  <ul class="breadcrumb">
+    <li><a href="{{ url_for('applicant.dashboard') }}"><i class="fas fa-home"></i> Dashboard</a></li>
+    <li class="breadcrumb-separator">/</li>
+    <li><a href="{{ url_for('applicant.my_applications') }}">My Applications</a></li>
+    <li class="breadcrumb-separator">/</li>
+    <li>Status Tracking</li>
+  </ul>
+
+  <!-- Application Summary Header -->
+  <div style="background: var(--surface-white); border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 24px 28px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+    <div>
+      <span style="font-size: 11px; font-weight: 700; color: var(--slate-400); text-transform: uppercase;">Tracking Application</span>
+      <h2 style="font-size: 22px; color: var(--primary-900); margin: 2px 0;">
+        <code>{{ app.application_number }}</code> &bull; {{ app.full_name }}
+      </h2>
+      <p style="font-size: 13px; color: var(--slate-600); margin: 0;">
+        {{ app.service_type }} ({{ app.application_type }}) &bull; Submitted: {{ app.submitted_at.strftime('%d %b %Y') if app.submitted_at else 'In Progress' }}
+      </p>
+    </div>
+    <div>
+      <span class="badge {% if app.status == 'Approved' %}badge-success{% elif app.status == 'Submitted' %}badge-info{% elif app.status == 'Under Verification' %}badge-warning{% elif app.status == 'Dispatched' %}badge-dark{% elif app.status == 'Rejected' %}badge-danger{% elif app.status == 'Returned for Correction' %}badge-warning{% else %}badge-draft{% endif %}" style="font-size: 14px; padding: 6px 14px;">
+        Current Status: {{ app.status }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Special Alert for Rejected or Returned for Correction -->
+  {% if app.status == 'Rejected' %}
+    <div class="alert alert-danger" style="display: block; padding: 20px 24px; margin-bottom: 24px;">
+      <div style="display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; margin-bottom: 6px;">
+        <i class="fas fa-times-circle" style="font-size: 20px;"></i> Application Rejected
+      </div>
+      <p style="font-size: 14px; margin: 0;">
+        Your passport application has been rejected by the Passport Verification Officer.
+      </p>
+      {% if latest_verification and latest_verification.reason %}
+        <div style="margin-top: 10px; padding: 10px 14px; background: rgba(220, 38, 38, 0.08); border-radius: 6px; font-size: 13px;">
+          <strong>Official Reason:</strong> {{ latest_verification.reason }}
+          {% if latest_verification.remarks %} &bull; <em>Remarks: {{ latest_verification.remarks }}</em>{% endif %}
+        </div>
+      {% endif %}
+    </div>
+  {% elif app.status == 'Returned for Correction' %}
+    <div class="alert alert-warning" style="display: block; padding: 20px 24px; margin-bottom: 24px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; margin-bottom: 4px;">
+            <i class="fas fa-exclamation-triangle" style="font-size: 20px;"></i> Application Returned for Correction
+          </div>
+          <p style="font-size: 14px; margin: 0;">
+            The verification officer requested revisions or document re-uploads before your application can proceed.
+          </p>
+        </div>
+        <div>
+          <a href="{{ url_for('applicant.document_upload', app_id=app.id) }}" class="btn btn-warning">
+            <i class="fas fa-edit"></i> Review & Re-upload Documents
+          </a>
+        </div>
+      </div>
+      {% if latest_verification and latest_verification.reason %}
+        <div style="margin-top: 12px; padding: 10px 14px; background: rgba(217, 119, 6, 0.1); border-radius: 6px; font-size: 13px;">
+          <strong>Officer Remarks:</strong> {{ latest_verification.reason }}
+          {% if latest_verification.remarks %} &bull; <em>{{ latest_verification.remarks }}</em>{% endif %}
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <!-- Visual 5-Stage Timeline Tracker -->
+  <div class="status-tracker-card">
+    <h3 style="font-size: 16px; margin-bottom: 8px;">
+      <i class="fas fa-stream" style="color: var(--primary-600);"></i> Progressive Lifecycle Milestone Timeline
+    </h3>
+
+    {% set stage_order = ['Submitted', 'Under Verification', 'Approved', 'Printed', 'Dispatched'] %}
+    {% set current_idx = -1 %}
+    {% if app.status in stage_order %}
+      {% set current_idx = stage_order.index(app.status) %}
+    {% elif app.status == 'Dispatched' %}
+      {% set current_idx = 4 %}
+    {% endif %}
+
+    <div class="timeline-horizontal">
+      {% for st in stages %}
+        {% set st_idx = loop.index0 %}
+        {% set is_completed = (current_idx >= st_idx and app.status not in ['Rejected', 'Returned for Correction']) %}
+        {% set is_active = (current_idx == st_idx and app.status not in ['Rejected', 'Returned for Correction']) %}
+
+        <div class="timeline-step {% if is_completed %}completed{% elif is_active %}active{% endif %}">
+          <div class="timeline-node">
+            {% if is_completed %}
+              <i class="fas fa-check"></i>
+            {% else %}
+              <i class="fas {% if loop.index == 1 %}fa-paper-plane{% elif loop.index == 2 %}fa-search{% elif loop.index == 3 %}fa-check-circle{% elif loop.index == 4 %}fa-print{% else %}fa-truck{% endif %}"></i>
+            {% endif %}
+          </div>
+          <div class="timeline-title">{{ st.label }}</div>
+          <div class="timeline-desc">
+            {% if is_completed %}Completed{% elif is_active %}In Progress{% else %}Pending{% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Historical Audit Trail Logs -->
+  <div class="card">
+    <div class="card-header">
+      <h3><i class="fas fa-history" style="color: var(--primary-600);"></i> Application Status Audit Trail</h3>
+    </div>
+    <div class="card-body" style="padding: 24px 32px;">
+      {% if history %}
+        <div class="audit-trail">
+          {% for h in history %}
+            <div class="audit-item">
+              <div class="audit-marker {% if 'Approved' in h.new_status %}success{% elif 'Rejected' in h.new_status %}danger{% elif 'Returned' in h.new_status %}warning{% endif %}"></div>
+              <div class="audit-content">
+                <div class="audit-header">
+                  <span class="audit-title">Status updated to: <strong>{{ h.new_status }}</strong></span>
+                  <span class="audit-time">{{ h.created_at.strftime('%d %b %Y, %I:%M %p') }}</span>
+                </div>
+                <div class="audit-remarks">
+                  {{ h.remarks or 'Status updated by system.' }}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p style="color: var(--slate-400); font-size: 13px;">No history records found.</p>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

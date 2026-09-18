@@ -1,0 +1,61 @@
+<aside class="admin-sidebar no-print">
+  <div style="padding: 0 12px 16px; border-bottom: 1px solid var(--slate-200); margin-bottom: 16px;">
+    <span style="font-size: 11px; font-weight: 700; color: var(--slate-400); text-transform: uppercase; letter-spacing: 0.05em;">Administration</span>
+    <h3 style="font-size: 15px; margin-top: 4px; color: var(--slate-800);">Passport Control Office</h3>
+  </div>
+
+  <ul class="admin-sidebar-menu">
+    <li class="menu-header">Dashboard & Processing</li>
+    <li>
+      <a href="{{ url_for('officer.dashboard') }}" class="{% if current_path == '/admin/dashboard' %}active{% endif %}">
+        <i class="fas fa-chart-pie"></i> Dashboard Overview
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('officer.applications') }}" class="{% if current_path == '/admin/applications' %}active{% endif %}">
+        <i class="fas fa-folder-open"></i> All Applications
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('officer.status_management') }}" class="{% if current_path == '/admin/status-management' %}active{% endif %}">
+        <i class="fas fa-tasks"></i> Status Management
+      </a>
+    </li>
+
+    <li class="menu-header">Appointments & Logistics</li>
+    <li>
+      <a href="{{ url_for('officer.appointments') }}" class="{% if current_path == '/admin/appointments' %}active{% endif %}">
+        <i class="fas fa-calendar-check"></i> Booked Appointments
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('officer.slots') }}" class="{% if current_path == '/admin/slots' %}active{% endif %}">
+        <i class="fas fa-business-time"></i> Manage Slots
+      </a>
+    </li>
+
+    <li class="menu-header">Citizens & Communication</li>
+    <li>
+      <a href="{{ url_for('officer.applicants') }}" class="{% if current_path == '/admin/applicants' %}active{% endif %}">
+        <i class="fas fa-users"></i> Applicant Registry
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('officer.notifications_mgmt') }}" class="{% if current_path == '/admin/notifications' %}active{% endif %}">
+        <i class="fas fa-bullhorn"></i> Notifications Center
+      </a>
+    </li>
+
+    <li class="menu-header">Reporting & Settings</li>
+    <li>
+      <a href="{{ url_for('officer.reports') }}" class="{% if current_path == '/admin/reports' %}active{% endif %}">
+        <i class="fas fa-file-invoice"></i> Reports & Analytics
+      </a>
+    </li>
+    <li>
+      <a href="{{ url_for('officer.profile') }}" class="{% if current_path == '/admin/profile' %}active{% endif %}">
+        <i class="fas fa-user-shield"></i> Officer Profile
+      </a>
+    </li>
+  </ul>
+</aside>

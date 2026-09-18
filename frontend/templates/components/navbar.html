@@ -1,0 +1,77 @@
+<nav class="main-navbar no-print">
+  <div class="container">
+    <div class="navbar-inner">
+      
+      <!-- Brand Logo -->
+      <a href="{% if current_user_role in ['officer', 'admin'] %}{{ url_for('officer.dashboard') }}{% elif current_user_role == 'applicant' %}{{ url_for('applicant.dashboard') }}{% else %}{{ url_for('auth.index') }}{% endif %}" class="brand-logo">
+        <div class="brand-emblem">
+          <i class="fas fa-passport"></i>
+        </div>
+        <div class="brand-text">
+          <h1>Passport Automation</h1>
+          <p>Online Application & Verification Portal</p>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <ul class="nav-menu">
+        {% if not current_user_role %}
+          <li class="nav-item"><a href="{{ url_for('auth.index') }}" class="{% if current_path == '/' %}active{% endif %}"><i class="fas fa-home"></i> Home</a></li>
+          <li class="nav-item"><a href="{{ url_for('auth.about') }}" class="{% if current_path == '/about' %}active{% endif %}"><i class="fas fa-info-circle"></i> About</a></li>
+          <li class="nav-item"><a href="{{ url_for('auth.contact') }}" class="{% if current_path == '/contact' %}active{% endif %}"><i class="fas fa-headset"></i> Help & Contact</a></li>
+        {% elif current_user_role == 'applicant' %}
+          <li class="nav-item"><a href="{{ url_for('applicant.dashboard') }}" class="{% if '/applicant/dashboard' in current_path %}active{% endif %}"><i class="fas fa-th-large"></i> Dashboard</a></li>
+          <li class="nav-item"><a href="{{ url_for('applicant.new_application') }}" class="{% if '/applications/new' in current_path %}active{% endif %}"><i class="fas fa-file-signature"></i> New Application</a></li>
+          <li class="nav-item"><a href="{{ url_for('applicant.my_applications') }}" class="{% if '/my-applications' in current_path %}active{% endif %}"><i class="fas fa-folder-open"></i> My Applications</a></li>
+        {% elif current_user_role in ['officer', 'admin'] %}
+          <li class="nav-item"><a href="{{ url_for('officer.dashboard') }}" class="{% if current_path == '/admin/dashboard' %}active{% endif %}"><i class="fas fa-chart-pie"></i> Admin Dashboard</a></li>
+          <li class="nav-item"><a href="{{ url_for('officer.applications') }}" class="{% if current_path == '/admin/applications' %}active{% endif %}"><i class="fas fa-list-check"></i> All Applications</a></li>
+          <li class="nav-item"><a href="{{ url_for('officer.appointments') }}" class="{% if current_path == '/admin/appointments' %}active{% endif %}"><i class="fas fa-calendar-check"></i> Appointments</a></li>
+          <li class="nav-item"><a href="{{ url_for('officer.reports') }}" class="{% if current_path == '/admin/reports' %}active{% endif %}"><i class="fas fa-chart-line"></i> Reports</a></li>
+        {% endif %}
+      </ul>
+
+      <!-- User & Notifications Controls -->
+      <div class="nav-actions">
+        {% if current_user_role %}
+          
+          <!-- Notifications Bell -->
+          {% if current_user_role == 'applicant' %}
+            <a href="{{ url_for('applicant.notifications') }}" class="notif-bell-btn" title="View Notifications">
+              <i class="far fa-bell"></i>
+              {% if unread_notifications_count > 0 %}
+                <span class="notif-badge">{{ unread_notifications_count }}</span>
+              {% endif %}
+            </a>
+          {% else %}
+            <a href="{{ url_for('officer.notifications_mgmt') }}" class="notif-bell-btn" title="Broadcast Notifications">
+              <i class="fas fa-bullhorn"></i>
+            </a>
+          {% endif %}
+
+          <!-- User Profile & Logout -->
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <a href="{% if current_user_role == 'applicant' %}{{ url_for('applicant.profile') }}{% else %}{{ url_for('officer.profile') }}{% endif %}" class="user-profile-badge">
+              <div class="user-avatar">
+                {{ current_user_name[0] if current_user_name else 'U' }}
+              </div>
+              <span>{{ current_user_name }}</span>
+              <span class="badge {% if current_user_role == 'admin' %}badge-danger{% elif current_user_role == 'officer' %}badge-primary{% else %}badge-info{% endif %}" style="font-size: 10px; padding: 2px 6px;">
+                {{ current_user_role | capitalize }}
+              </span>
+            </a>
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary btn-sm" title="Log Out">
+              <i class="fas fa-sign-out-alt"></i>
+            </a>
+          </div>
+
+        {% else %}
+          <!-- Unauthenticated Controls -->
+          <a href="{{ url_for('auth.register') }}" class="btn btn-outline btn-sm">Register</a>
+          <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-sm"><i class="fas fa-sign-in-alt"></i> Login</a>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+</nav>

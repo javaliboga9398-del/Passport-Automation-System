@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}Review Application — Passport Automation System{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 900px;">
+  
+  <ul class="breadcrumb">
+    <li><a href="{{ url_for('applicant.dashboard') }}"><i class="fas fa-home"></i> Dashboard</a></li>
+    <li class="breadcrumb-separator">/</li>
+    <li><a href="{{ url_for('applicant.document_upload', app_id=app.id) }}">Document Upload</a></li>
+    <li class="breadcrumb-separator">/</li>
+    <li>Application Review</li>
+  </ul>
+
+  <div style="margin-bottom: 24px;">
+    <h2 style="font-size: 26px; color: var(--primary-900);">Application Verification & Review</h2>
+    <p style="font-size: 14px; color: var(--slate-600); margin-top: 4px;">
+      Please inspect all entered parameters carefully. Once submitted, changes cannot be made without officer intervention.
+    </p>
+  </div>
+
+  <!-- Review Sections -->
+  <div class="card">
+    <div class="card-header">
+      <h3><i class="far fa-user" style="color: var(--primary-600);"></i> 1. Personal Identity Details</h3>
+      <a href="{{ url_for('applicant.form_wizard', app_id=app.id, step=1) }}" class="btn btn-outline btn-sm">
+        <i class="fas fa-pencil-alt"></i> Edit
+      </a>
+    </div>
+    <div class="card-body">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; font-size: 14px;">
+        <div>
+          <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Full Legal Name</span>
+          <div style="font-weight: 600; color: var(--slate-800); margin-top: 2px;">{{ app.full_name }}</div>
+        </div>
+        <div>
+          <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Date of Birth</span>
+          <div style="font-weight: 600; color: var(--slate-800); margin-top: 2px;">{{ app.date_of_birth.strftime('%d %B %Y') if app.date_of_birth else 'N/A' }}</div>
+        </div>
+        <div>
+          <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Gender</span>
+          <div style="font-weight: 600; color: var(--slate-800); margin-top: 2px;">{{ app.gender }}</div>
+        </div>
+        <div>
+          <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Place of Birth</span>
+          <div style="font-weight: 600; color: var(--slate-800); margin-top: 2px;">{{ app.place_of_birth }}</div>
+        </div>
+        <div>
+          <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Nationality</span>
+          <div style="font-weight: 600; color: var(--slate-800); margin-top: 2px;">{{ app.nationality }}</div>
+        </div>
+        <div>
+          <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Marital Status</span>
+          <div style="font-weight: 600; color: var(--slate-800); margin-top: 2px;">{{ app.marital_status }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3><i class="far fa-address-book" style="color: var(--primary-600);"></i> 2. Contact & Address Details</h3>
+      <div style="display: flex; gap: 8px;">
+        <a href="{{ url_for('applicant.form_wizard', app_id=app.id, step=2) }}" class="btn btn-outline btn-sm"><i class="fas fa-pencil-alt"></i> Edit Contact</a>
+        <a href="{{ url_for('applicant.form_wizard', app_id=app.id, step=3) }}" class="btn btn-outline btn-sm"><i class="fas fa-pencil-alt"></i> Edit Address</a>
+      </div>
+    </div>
+    <div class="card-body">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; font-size: 14px;">
+        <div>
+          <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Mobile Number</span>
+          <div style="font-weight: 600; color: var(--slate-800); margin-top: 2px;">{{ app.mobile_number }}</div>
+        </div>
+        <div>
+          <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Email Address</span>
+          <div style="font-weight: 600; color: var(--slate-800); margin-top: 2px;">{{ app.email }}</div>
+        </div>
+        <div>
+          <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Residential Address</span>
+          <div style="font-weight: 600; color: var(--slate-800); margin-top: 2px;">
+            {{ app.house_no }}, {{ app.street }}, {{ app.city }}, {{ app.district }}, {{ app.state }} - {{ app.pincode }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3><i class="fas fa-passport" style="color: var(--primary-600);"></i> 3. Passport Service Scheme</h3>
+      <a href="{{ url_for('applicant.form_wizard', app_id=app.id, step=4) }}" class="btn btn-outline btn-sm">
+        <i class="fas fa-pencil-alt"></i> Edit
+      </a>
+    </div>
+    <div class="card-body">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; font-size: 14px;">
+        <div>
+          <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Service Type</span>
+          <div style="font-weight: 600; color: var(--slate-800); margin-top: 2px;">{{ app.service_type }}</div>
+        </div>
+        <div>
+          <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Application Scheme</span>
+          <div style="font-weight: 600; color: var(--slate-800); margin-top: 2px;">{{ app.application_type }}</div>
+        </div>
+        <div>
+          <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Booklet Size</span>
+          <div style="font-weight: 600; color: var(--slate-800); margin-top: 2px;">{{ app.booklet_type }}</div>
+        </div>
+        {% if app.previous_passport_number %}
+          <div>
+            <span style="font-size: 11px; color: var(--slate-400); text-transform: uppercase; font-weight: 700;">Previous Passport Number</span>
+            <div style="font-weight: 600; color: var(--slate-800); margin-top: 2px;"><code>{{ app.previous_passport_number }}</code></div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3><i class="fas fa-paperclip" style="color: var(--primary-600);"></i> 4. Attached Documents</h3>
+      <a href="{{ url_for('applicant.document_upload', app_id=app.id) }}" class="btn btn-outline btn-sm">
+        <i class="fas fa-upload"></i> Manage Documents
+      </a>
+    </div>
+    <div class="card-body" style="padding: 16px;">
+      {% if documents %}
+        <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+          {% for doc in documents %}
+            <div style="display: flex; align-items: center; gap: 8px; background: var(--slate-50); border: 1px solid var(--slate-200); padding: 8px 14px; border-radius: var(--radius-sm); font-size: 13px;">
+              <i class="fas fa-file-alt" style="color: var(--primary-600);"></i>
+              <div>
+                <strong>{{ doc.doc_type }}:</strong> {{ doc.original_filename }}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div style="color: var(--danger-600); font-weight: 600; font-size: 13px;">
+          <i class="fas fa-exclamation-triangle"></i> Warning: No documents uploaded. You must upload required documents before submitting.
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Submission Form -->
+  <div style="background: var(--surface-white); border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 24px; display: flex; justify-content: space-between; align-items: center; margin-top: 32px;">
+    <div>
+      <a href="{{ url_for('applicant.document_upload', app_id=app.id) }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Documents
+      </a>
+    </div>
+
+    <form action="{{ url_for('applicant.submit_application', app_id=app.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to submit your passport application? After submission, a unique Application ID will be generated and you will be directed to schedule an appointment.');">
+      <button type="submit" class="btn btn-success btn-lg">
+        <i class="fas fa-check-circle"></i> Confirm & Submit Application
+      </button>
+    </form>
+  </div>
+
+</div>
+{% endblock %}

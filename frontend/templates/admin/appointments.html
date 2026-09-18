@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Appointments Management — Passport Automation System{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+  
+  {% include 'components/sidebar.html' %}
+
+  <main class="admin-content">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 14px;">
+      <div>
+        <h1 style="font-size: 24px; color: var(--slate-900);">Citizen Appointment Schedule</h1>
+        <p style="font-size: 13px; color: var(--slate-500); margin-top: 2px;">
+          Manage daily bookings, monitor attendance, and inspect biometric reporting slots
+        </p>
+      </div>
+      <div>
+        <a href="{{ url_for('officer.slots') }}" class="btn btn-primary btn-sm">
+          <i class="fas fa-calendar-plus"></i> Manage Time Slots
+        </a>
+      </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="card" style="margin-bottom: 24px;">
+      <div class="card-body" style="padding: 18px 24px;">
+        <form action="{{ url_for('officer.appointments') }}" method="GET" style="display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end;">
+          
+          <div style="flex: 1; min-width: 180px;">
+            <label class="form-label" style="font-size: 12px;">Filter Appointment Date</label>
+            <input type="date" name="date" class="form-control form-control-sm" value="{{ date_filter }}">
+          </div>
+
+          <div style="flex: 1; min-width: 180px;">
+            <label class="form-label" style="font-size: 12px;">Filter Status</label>
+            <select name="status" class="form-select form-select-sm">
+              <option value="">All Statuses</option>
+              <option value="Scheduled" {% if status_filter == 'Scheduled' %}selected{% endif %}>Scheduled</option>
+              <option value="Completed" {% if status_filter == 'Completed' %}selected{% endif %}>Completed</option>
+              <option value="Cancelled" {% if status_filter == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+            </select>
+          </div>
+
+          <div style="display: flex; gap: 8px;">
+            <button type="submit" class="btn btn-primary btn-sm">
+              <i class="fas fa-filter"></i> Filter
+            </button>
+            <a href="{{ url_for('officer.appointments') }}" class="btn btn-secondary btn-sm">
+              <i class="fas fa-redo"></i> Reset
+            </a>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- Appointments Table -->
+    <div class="card">
+      <div class="card-header">
+        <h3>
+          <i class="fas fa-calendar-check" style="color: var(--primary-600);"></i> Scheduled Appointments
+          <span style="font-size: 12px; font-weight: 500; color: var(--slate-500); margin-left: 6px;">({{ appointments|length }} records)</span>
+        </h3>
+      </div>
+      <div class="card-body" style="padding: 0;">
+        {% if appointments %}
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Token Reference</th>
+                  <th>Application Number</th>
+                  <th>Applicant Name</th>
+                  <th>Appointment Date</th>
+                  <th>Time Window</th>
+                  <th>Location</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for apt in appointments %}
+                  <tr>
+                    <td><code>{{ apt.appointment_number }}</code></td>
+                    <td>
+                      <a href="{{ url_for('officer.application_details', app_id=apt.application.id) }}" style="color: var(--primary-600); font-weight: 600;">
+                        {{ apt.application.application_number }}
+                      </a>
+                    </td>
+                    <td>
+                      <div style="font-weight: 600; color: var(--slate-800);">{{ apt.application.full_name }}</div>
+                      <div style="font-size: 11px; color: var(--slate-500);">{{ apt.application.mobile_number }}</div>
+                    </td>
+                    <td>{{ apt.appointment_date.strftime('%d %b %Y') }}</td>
+                    <td><strong style="color: var(--primary-800);">{{ apt.appointment_time }}</strong></td>
+                    <td style="font-size: 12px; color: var(--slate-600);">{{ apt.location }}</td>
+                    <td>
+                      <span class="badge {% if apt.status == 'Completed' %}badge-success{% elif apt.status == 'Cancelled' %}badge-danger{% else %}badge-info{% endif %}">
+                        {{ apt.status }}
+                      </span>
+                    </td>
+                    <td>
+                      <a href="{{ url_for('officer.application_details', app_id=apt.application.id) }}" class="btn btn-secondary btn-sm" title="View Application Dossier">
+                        <i class="fas fa-eye"></i> Dossier
+                      </a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div style="text-align: center; padding: 48px 20px; color: var(--slate-400);">
+            <i class="far fa-calendar-times" style="font-size: 38px; margin-bottom: 12px; display: block;"></i>
+            <h4>No Appointments Found</h4>
+            <p style="font-size: 13px; margin-top: 4px;">No bookings match the selected filters.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+  </main>
+
+</div>
+{% endblock %}

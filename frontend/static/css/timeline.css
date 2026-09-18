@@ -1,0 +1,161 @@
+/* Status Timeline & Audit Trail Component */
+
+.status-tracker-card {
+  padding: 32px 24px;
+  background: var(--surface-white);
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  margin-bottom: 28px;
+}
+
+.timeline-horizontal {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  margin: 30px 0 20px;
+}
+
+.timeline-horizontal::before {
+  content: '';
+  position: absolute;
+  top: 24px;
+  left: 5%;
+  right: 5%;
+  height: 4px;
+  background-color: var(--slate-200);
+  z-index: 1;
+}
+
+.timeline-step {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  flex: 1;
+}
+
+.timeline-node {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  background-color: var(--surface-white);
+  border: 3px solid var(--slate-300);
+  color: var(--slate-400);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+  font-size: 18px;
+  transition: var(--transition);
+}
+
+.timeline-step.completed .timeline-node {
+  border-color: var(--success-600);
+  background-color: var(--success-600);
+  color: #ffffff;
+}
+
+.timeline-step.active .timeline-node {
+  border-color: var(--primary-600);
+  background-color: var(--primary-600);
+  color: #ffffff;
+  box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.2);
+  animation: pulse-ring 2s infinite;
+}
+
+.timeline-step.rejected .timeline-node {
+  border-color: var(--danger-600);
+  background-color: var(--danger-600);
+  color: #ffffff;
+}
+
+.timeline-step.returned .timeline-node {
+  border-color: var(--warning-600);
+  background-color: var(--warning-600);
+  color: #ffffff;
+}
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+}
+
+.timeline-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--slate-700);
+  margin-bottom: 2px;
+}
+
+.timeline-desc {
+  font-size: 12px;
+  color: var(--slate-500);
+}
+
+/* Vertical Audit Log Trail */
+.audit-trail {
+  position: relative;
+  padding-left: 32px;
+}
+
+.audit-trail::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 11px;
+  width: 2px;
+  background-color: var(--slate-200);
+}
+
+.audit-item {
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.audit-marker {
+  position: absolute;
+  left: -32px;
+  top: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-full);
+  background: var(--surface-white);
+  border: 3px solid var(--primary-600);
+}
+
+.audit-marker.success { border-color: var(--success-600); }
+.audit-marker.danger { border-color: var(--danger-600); }
+.audit-marker.warning { border-color: var(--warning-600); }
+
+.audit-content {
+  background: var(--slate-50);
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+}
+
+.audit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.audit-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--slate-800);
+}
+
+.audit-time {
+  font-size: 12px;
+  color: var(--slate-500);
+  font-family: var(--font-mono);
+}
+
+.audit-remarks {
+  font-size: 13px;
+  color: var(--slate-600);
+}

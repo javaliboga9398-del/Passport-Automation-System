@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block title %}Home — Passport Automation System{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section style="background: linear-gradient(135deg, var(--primary-900) 0%, #1e3a8a 100%); color: #ffffff; padding: 70px 0 80px; position: relative; overflow: hidden;">
+  <div class="container">
+    <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 48px; align-items: center;">
+      
+      <div>
+        <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.12); padding: 6px 14px; border-radius: var(--radius-full); font-size: 13px; font-weight: 600; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.2);">
+          <i class="fas fa-shield-alt" style="color: #60a5fa;"></i> Secure Government-Grade e-Service Portal
+        </div>
+        <h1 style="color: #ffffff; font-size: 42px; font-weight: 800; line-height: 1.15; margin-bottom: 18px; letter-spacing: -0.02em;">
+          Passport Automation System
+        </h1>
+        <p style="color: #cbd5e1; font-size: 18px; line-height: 1.6; margin-bottom: 32px; max-width: 580px;">
+          Apply, schedule, track and manage your passport application online through our state-of-the-art automated verification workflow.
+        </p>
+
+        <div style="display: flex; gap: 14px; flex-wrap: wrap;">
+          <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg" style="background: #2563eb; border-color: #2563eb; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);">
+            <i class="fas fa-file-signature"></i> Apply Now
+          </a>
+          <a href="{{ url_for('auth.login') }}" class="btn btn-secondary btn-lg" style="background: rgba(255, 255, 255, 0.1); color: #fff; border-color: rgba(255, 255, 255, 0.3);">
+            <i class="fas fa-sign-in-alt"></i> Login
+          </a>
+          <a href="#track-section" class="btn btn-outline btn-lg" style="color: #93c5fd; border-color: rgba(147, 197, 253, 0.4);">
+            <i class="fas fa-search"></i> Track Application
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Track Card -->
+      <div id="track-section">
+        <div class="card" style="box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);">
+          <div class="card-header" style="background: var(--surface-white); border-bottom: 1px solid var(--slate-200);">
+            <h3 style="color: var(--primary-900); font-size: 18px;">
+              <i class="fas fa-crosshairs" style="color: var(--primary-600);"></i> Fast Application Tracker
+            </h3>
+          </div>
+          <div class="card-body" style="background: #ffffff;">
+            <p style="font-size: 13px; color: var(--slate-600); margin-bottom: 16px;">
+              Enter your unique Application ID (e.g. <code>PAS202600001</code>) to check your real-time processing status.
+            </p>
+            
+            <form action="{{ url_for('auth.login') }}" method="GET" id="quickTrackForm">
+              <div class="form-group">
+                <label class="form-label">Application Number</label>
+                <div style="position: relative;">
+                  <i class="fas fa-hashtag" style="position: absolute; left: 14px; top: 12px; color: var(--slate-400);"></i>
+                  <input type="text" id="track_app_num" class="form-control" placeholder="PAS202600001" style="padding-left: 36px; font-family: var(--font-mono); text-transform: uppercase;" required>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary" style="width: 100%;">
+                <i class="fas fa-search"></i> Check Status Now
+              </button>
+            </form>
+
+            <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--slate-100); font-size: 12px; color: var(--slate-500); display: flex; align-items: center; gap: 8px;">
+              <i class="fas fa-info-circle" style="color: var(--primary-500);"></i>
+              <span>Demo accounts: Track <code>PAS202600001</code> (Approved), <code>PAS202600002</code> (Submitted).</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Core Features Grid -->
+<section style="padding: 60px 0; background: var(--slate-50);">
+  <div class="container">
+    <div style="text-align: center; max-width: 640px; margin: 0 auto 48px;">
+      <h2 style="font-size: 28px; color: var(--slate-900); margin-bottom: 12px;">Citizen-Centric Digital Services</h2>
+      <p style="color: var(--slate-600); font-size: 15px;">Designed to streamline every touchpoint between applicants and the passport issuing authority.</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px;">
+      
+      <div class="card" style="padding: 24px; text-align: center; height: 100%;">
+        <div style="width: 54px; height: 54px; background: var(--primary-50); color: var(--primary-600); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 22px; margin: 0 auto 16px;">
+          <i class="fas fa-edit"></i>
+        </div>
+        <h3 style="font-size: 16px; margin-bottom: 8px;">Apply for Passport</h3>
+        <p style="font-size: 13px; color: var(--slate-600);">Simple multi-step application for fresh passports and renewals with draft saving.</p>
+      </div>
+
+      <div class="card" style="padding: 24px; text-align: center; height: 100%;">
+        <div style="width: 54px; height: 54px; background: var(--success-50); color: var(--success-600); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 22px; margin: 0 auto 16px;">
+          <i class="fas fa-calendar-alt"></i>
+        </div>
+        <h3 style="font-size: 16px; margin-bottom: 8px;">Schedule Appointment</h3>
+        <p style="font-size: 13px; color: var(--slate-600);">Real-time slot availability with concurrency locking to prevent double bookings.</p>
+      </div>
+
+      <div class="card" style="padding: 24px; text-align: center; height: 100%;">
+        <div style="width: 54px; height: 54px; background: var(--warning-50); color: var(--warning-600); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 22px; margin: 0 auto 16px;">
+          <i class="fas fa-cloud-upload-alt"></i>
+        </div>
+        <h3 style="font-size: 16px; margin-bottom: 8px;">Secure Document Upload</h3>
+        <p style="font-size: 13px; color: var(--slate-600);">Upload Identity, Address, and DOB proof documents with encrypted server storage.</p>
+      </div>
+
+      <div class="card" style="padding: 24px; text-align: center; height: 100%;">
+        <div style="width: 54px; height: 54px; background: var(--info-50); color: var(--info-600); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 22px; margin: 0 auto 16px;">
+          <i class="fas fa-route"></i>
+        </div>
+        <h3 style="font-size: 16px; margin-bottom: 8px;">Online Status Updates</h3>
+        <p style="font-size: 13px; color: var(--slate-600);">Track your application through every milestone with transparent officer remarks.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- 4-Step Process Section -->
+<section style="padding: 60px 0; background: var(--surface-white); border-top: 1px solid var(--slate-200); border-bottom: 1px solid var(--slate-200);">
+  <div class="container">
+    <div style="text-align: center; max-width: 600px; margin: 0 auto 48px;">
+      <h2 style="font-size: 28px; margin-bottom: 10px;">How It Works</h2>
+      <p style="color: var(--slate-600);">Complete your passport process in 4 simple automated steps</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 32px; position: relative;">
+      
+      <div style="text-align: center;">
+        <div style="width: 44px; height: 44px; background: var(--primary-600); color: #fff; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-weight: 800; margin: 0 auto 16px; font-size: 16px;">1</div>
+        <h4 style="font-size: 16px; margin-bottom: 8px;">Register & Fill Form</h4>
+        <p style="font-size: 13px; color: var(--slate-500);">Create your applicant account and fill out the multi-step online passport form.</p>
+      </div>
+
+      <div style="text-align: center;">
+        <div style="width: 44px; height: 44px; background: var(--primary-600); color: #fff; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-weight: 800; margin: 0 auto 16px; font-size: 16px;">2</div>
+        <h4 style="font-size: 16px; margin-bottom: 8px;">Upload Documents</h4>
+        <p style="font-size: 13px; color: var(--slate-500);">Submit required identity proof, address proof, photograph, and signature.</p>
+      </div>
+
+      <div style="text-align: center;">
+        <div style="width: 44px; height: 44px; background: var(--primary-600); color: #fff; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-weight: 800; margin: 0 auto 16px; font-size: 16px;">3</div>
+        <h4 style="font-size: 16px; margin-bottom: 8px;">Book Appointment</h4>
+        <p style="font-size: 13px; color: var(--slate-500);">Select a convenient date and time slot at the Passport Seva Kendra.</p>
+      </div>
+
+      <div style="text-align: center;">
+        <div style="width: 44px; height: 44px; background: var(--success-600); color: #fff; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-weight: 800; margin: 0 auto 16px; font-size: 16px;">4</div>
+        <h4 style="font-size: 16px; margin-bottom: 8px;">Track & Receive</h4>
+        <p style="font-size: 13px; color: var(--slate-500);">Monitor verification progress in real-time until passport printing and dispatch.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Demo Credentials Helper Banner -->
+<section style="padding: 40px 0; background: var(--primary-50); border-bottom: 1px solid var(--primary-100);">
+  <div class="container">
+    <div style="background: var(--surface-white); border: 1px solid #bfdbfe; border-radius: var(--radius-md); padding: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+      <div>
+        <div style="display: flex; align-items: center; gap: 8px; color: var(--primary-700); font-weight: 700; margin-bottom: 4px;">
+          <i class="fas fa-graduation-cap"></i> Academic Evaluation & Viva Demonstration
+        </div>
+        <p style="font-size: 13px; color: var(--slate-600); margin: 0;">
+          Pre-seeded with Admin, Verification Officer, and Applicant accounts demonstrating all 8 application lifecycle stages.
+        </p>
+      </div>
+      <div>
+        <a href="{{ url_for('auth.login') }}" class="btn btn-primary">
+          <i class="fas fa-key"></i> Open Login with Demo Fast-Fill
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.getElementById('quickTrackForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const val = document.getElementById('track_app_num').value.trim();
+  if (val) {
+    window.location.href = "{{ url_for('auth.login') }}?track=" + encodeURIComponent(val);
+  }
+});
+</script>
+{% endblock %}
