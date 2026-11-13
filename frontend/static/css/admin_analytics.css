@@ -1,1 +1,226 @@
+/* =========================================================
+   Admin Operational Analytics
+   Passport Automation System
+   ========================================================= */
 
+.analytics-section {
+    margin-top: 28px;
+    margin-bottom: 28px;
+}
+
+.analytics-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.analytics-header-title {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.analytics-header-title i {
+    color: var(--primary-600);
+}
+
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(190px, 1fr)
+    );
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.analytics-card {
+    padding: 20px;
+    border: 1px solid var(--slate-200);
+    border-radius: 10px;
+    background: var(--slate-50);
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.analytics-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 16px rgba(15, 23, 42, 0.08);
+}
+
+.analytics-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.analytics-label {
+    font-size: 13px;
+    color: var(--slate-500);
+}
+
+.analytics-icon {
+    font-size: 16px;
+}
+
+.analytics-icon.success {
+    color: var(--success-600);
+}
+
+.analytics-icon.warning {
+    color: var(--warning-600);
+}
+
+.analytics-icon.danger {
+    color: var(--danger-600);
+}
+
+.analytics-number {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--slate-900);
+}
+
+.analytics-progress {
+    height: 6px;
+    margin-top: 10px;
+    background: var(--slate-200);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.analytics-progress-bar {
+    width: 0;
+    height: 100%;
+    border-radius: 10px;
+    transition: width 1s ease;
+}
+
+.analytics-progress-bar.success {
+    background: var(--success-500);
+}
+
+.analytics-progress-bar.warning {
+    background: var(--warning-500);
+}
+
+.analytics-progress-bar.danger {
+    background: var(--danger-500);
+}
+
+
+/* Operational Summary */
+
+.analytics-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(220px, 1fr)
+    );
+    gap: 16px;
+}
+
+.analytics-summary {
+    padding: 18px;
+    border-left: 4px solid var(--primary-600);
+    background: var(--slate-50);
+    border-radius: 6px;
+}
+
+.analytics-summary.warning {
+    border-left-color: var(--warning-600);
+}
+
+.analytics-summary.success {
+    border-left-color: var(--success-600);
+}
+
+.analytics-summary.primary {
+    border-left-color: var(--primary-600);
+}
+
+.analytics-summary-label {
+    font-size: 12px;
+    color: var(--slate-500);
+    margin-bottom: 6px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.analytics-summary-number {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--slate-900);
+}
+
+.analytics-summary-description {
+    font-size: 12px;
+    color: var(--slate-500);
+    margin-top: 4px;
+}
+
+
+/* Management Insight */
+
+.analytics-insight {
+    margin-top: 20px;
+    padding: 16px 18px;
+    background: var(--slate-50);
+    border-radius: 8px;
+    border: 1px solid var(--slate-200);
+}
+
+.analytics-insight-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+    color: var(--slate-800);
+    font-weight: 600;
+}
+
+.analytics-insight-title i {
+    color: var(--warning-600);
+}
+
+.analytics-insight-text {
+    margin: 0;
+    font-size: 13px;
+    color: var(--slate-600);
+    line-height: 1.6;
+}
+
+
+/* Responsive Design */
+
+@media (max-width: 768px) {
+
+    .analytics-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .analytics-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .analytics-number {
+        font-size: 25px;
+    }
+
+}
+
+@media (max-width: 480px) {
+
+    .analytics-card {
+        padding: 16px;
+    }
+
+    .analytics-summary {
+        padding: 15px;
+    }
+
+}
