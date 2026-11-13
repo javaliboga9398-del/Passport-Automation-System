@@ -1,332 +1,251 @@
-<!-- Admin Operational Analytics -->
-<div class="card" style="margin-top: 28px; margin-bottom: 28px;">
-  <div class="card-header">
-    <h3>
-      <i class="fas fa-chart-line" style="color: var(--primary-600);"></i>
-      Operational Analytics & Performance Insights
-    </h3>
+<!-- =========================================================
+     Admin Operational Analytics
+     Passport Automation System
+     ========================================================= -->
+
+{% set analytics_total = total_applications if total_applications > 0 else 1 %}
+{% set approved_rate = ((approved_count / analytics_total) * 100)|round(1) %}
+{% set rejected_rate = ((rejected_count / analytics_total) * 100)|round(1) %}
+{% set pending_rate = ((pending_verification / analytics_total) * 100)|round(1) %}
+
+<div
+  class="card analytics-section"
+  data-total-applications="{{ total_applications }}"
+  data-pending-applications="{{ pending_verification }}"
+>
+
+  <!-- Header -->
+
+  <div class="card-header analytics-header">
+
+    <div class="analytics-header-title">
+
+      <i class="fas fa-chart-line"></i>
+
+      <h3>
+        Operational Analytics & Performance Insights
+      </h3>
+
+    </div>
+
   </div>
+
 
   <div class="card-body">
 
-    {% set analytics_total = total_applications if total_applications > 0 else 1 %}
-    {% set approved_rate = ((approved_count / analytics_total) * 100)|round(1) %}
-    {% set rejected_rate = ((rejected_count / analytics_total) * 100)|round(1) %}
-    {% set pending_rate = ((pending_verification / analytics_total) * 100)|round(1) %}
+    <!-- Performance Rate Cards -->
 
-    <!-- Analytics Cards -->
-    <div style="
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
-    ">
+    <div class="analytics-grid">
 
       <!-- Approval Rate -->
-      <div style="
-        padding: 20px;
-        border: 1px solid var(--slate-200);
-        border-radius: 10px;
-        background: var(--slate-50);
-      ">
-        <div style="
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 12px;
-        ">
-          <span style="font-size: 13px; color: var(--slate-500);">
+
+      <div class="analytics-card">
+
+        <div class="analytics-card-top">
+
+          <span class="analytics-label">
             Approval Rate
           </span>
-          <i class="fas fa-check-double"
-             style="color: var(--success-600);"></i>
+
+          <i class="fas fa-check-double analytics-icon success"></i>
+
         </div>
 
-        <div style="
-          font-size: 28px;
-          font-weight: 700;
-          color: var(--slate-900);
-        ">
+        <div class="analytics-number">
           {{ approved_rate }}%
         </div>
 
-        <div style="
-          height: 6px;
-          background: var(--slate-200);
-          border-radius: 10px;
-          overflow: hidden;
-          margin-top: 10px;
-        ">
-          <div style="
-            width: {{ approved_rate }}%;
-            height: 100%;
-            background: var(--success-500);
-            border-radius: 10px;
-          "></div>
+        <div class="analytics-progress">
+
+          <div
+            class="analytics-progress-bar success"
+            data-percentage="{{ approved_rate }}"
+          ></div>
+
         </div>
+
       </div>
 
+
       <!-- Pending Rate -->
-      <div style="
-        padding: 20px;
-        border: 1px solid var(--slate-200);
-        border-radius: 10px;
-        background: var(--slate-50);
-      ">
-        <div style="
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 12px;
-        ">
-          <span style="font-size: 13px; color: var(--slate-500);">
+
+      <div class="analytics-card">
+
+        <div class="analytics-card-top">
+
+          <span class="analytics-label">
             Pending Rate
           </span>
-          <i class="fas fa-hourglass-half"
-             style="color: var(--warning-600);"></i>
+
+          <i class="fas fa-hourglass-half analytics-icon warning"></i>
+
         </div>
 
-        <div style="
-          font-size: 28px;
-          font-weight: 700;
-          color: var(--slate-900);
-        ">
+        <div class="analytics-number">
           {{ pending_rate }}%
         </div>
 
-        <div style="
-          height: 6px;
-          background: var(--slate-200);
-          border-radius: 10px;
-          overflow: hidden;
-          margin-top: 10px;
-        ">
-          <div style="
-            width: {{ pending_rate }}%;
-            height: 100%;
-            background: var(--warning-500);
-            border-radius: 10px;
-          "></div>
+        <div class="analytics-progress">
+
+          <div
+            class="analytics-progress-bar warning"
+            data-percentage="{{ pending_rate }}"
+          ></div>
+
         </div>
+
       </div>
 
+
       <!-- Rejection Rate -->
-      <div style="
-        padding: 20px;
-        border: 1px solid var(--slate-200);
-        border-radius: 10px;
-        background: var(--slate-50);
-      ">
-        <div style="
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 12px;
-        ">
-          <span style="font-size: 13px; color: var(--slate-500);">
+
+      <div class="analytics-card">
+
+        <div class="analytics-card-top">
+
+          <span class="analytics-label">
             Rejection Rate
           </span>
-          <i class="fas fa-times-circle"
-             style="color: var(--danger-600);"></i>
+
+          <i class="fas fa-times-circle analytics-icon danger"></i>
+
         </div>
 
-        <div style="
-          font-size: 28px;
-          font-weight: 700;
-          color: var(--slate-900);
-        ">
+        <div class="analytics-number">
           {{ rejected_rate }}%
         </div>
 
-        <div style="
-          height: 6px;
-          background: var(--slate-200);
-          border-radius: 10px;
-          overflow: hidden;
-          margin-top: 10px;
-        ">
-          <div style="
-            width: {{ rejected_rate }}%;
-            height: 100%;
-            background: var(--danger-500);
-            border-radius: 10px;
-          "></div>
+        <div class="analytics-progress">
+
+          <div
+            class="analytics-progress-bar danger"
+            data-percentage="{{ rejected_rate }}"
+          ></div>
+
         </div>
+
       </div>
 
     </div>
 
-    <!-- Operational Summary -->
-    <div style="
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-    ">
 
-      <div style="
-        padding: 18px;
-        border-left: 4px solid var(--primary-600);
-        background: var(--slate-50);
-        border-radius: 6px;
-      ">
-        <div style="
-          font-size: 12px;
-          color: var(--slate-500);
-          margin-bottom: 6px;
-        ">
+    <!-- Operational Summary -->
+
+    <div class="analytics-summary-grid">
+
+      <!-- Total Workload -->
+
+      <div class="analytics-summary primary">
+
+        <div class="analytics-summary-label">
           TOTAL WORKLOAD
         </div>
 
-        <div style="
-          font-size: 22px;
-          font-weight: 700;
-          color: var(--slate-900);
-        ">
+        <div class="analytics-summary-number">
           {{ total_applications }}
         </div>
 
-        <div style="
-          font-size: 12px;
-          color: var(--slate-500);
-          margin-top: 4px;
-        ">
+        <div class="analytics-summary-description">
           Applications currently recorded
         </div>
+
       </div>
 
-      <div style="
-        padding: 18px;
-        border-left: 4px solid var(--warning-600);
-        background: var(--slate-50);
-        border-radius: 6px;
-      ">
-        <div style="
-          font-size: 12px;
-          color: var(--slate-500);
-          margin-bottom: 6px;
-        ">
+
+      <!-- Action Required -->
+
+      <div class="analytics-summary warning">
+
+        <div class="analytics-summary-label">
           ACTION REQUIRED
         </div>
 
-        <div style="
-          font-size: 22px;
-          font-weight: 700;
-          color: var(--slate-900);
-        ">
+        <div class="analytics-summary-number">
           {{ pending_verification }}
         </div>
 
-        <div style="
-          font-size: 12px;
-          color: var(--slate-500);
-          margin-top: 4px;
-        ">
+        <div class="analytics-summary-description">
           Applications awaiting verification
         </div>
+
       </div>
 
-      <div style="
-        padding: 18px;
-        border-left: 4px solid var(--success-600);
-        background: var(--slate-50);
-        border-radius: 6px;
-      ">
-        <div style="
-          font-size: 12px;
-          color: var(--slate-500);
-          margin-bottom: 6px;
-        ">
+
+      <!-- Completed -->
+
+      <div class="analytics-summary success">
+
+        <div class="analytics-summary-label">
           COMPLETED
         </div>
 
-        <div style="
-          font-size: 22px;
-          font-weight: 700;
-          color: var(--slate-900);
-        ">
+        <div class="analytics-summary-number">
           {{ approved_count }}
         </div>
 
-        <div style="
-          font-size: 12px;
-          color: var(--slate-500);
-          margin-top: 4px;
-        ">
+        <div class="analytics-summary-description">
           Applications approved successfully
         </div>
+
       </div>
 
-      <div style="
-        padding: 18px;
-        border-left: 4px solid var(--primary-600);
-        background: var(--slate-50);
-        border-radius: 6px;
-      ">
-        <div style="
-          font-size: 12px;
-          color: var(--slate-500);
-          margin-bottom: 6px;
-        ">
+
+      <!-- Today's Operations -->
+
+      <div class="analytics-summary primary">
+
+        <div class="analytics-summary-label">
           TODAY'S OPERATIONS
         </div>
 
-        <div style="
-          font-size: 22px;
-          font-weight: 700;
-          color: var(--slate-900);
-        ">
+        <div class="analytics-summary-number">
           {{ today_appointments }}
         </div>
 
-        <div style="
-          font-size: 12px;
-          color: var(--slate-500);
-          margin-top: 4px;
-        ">
+        <div class="analytics-summary-description">
           Appointments scheduled today
         </div>
+
       </div>
 
     </div>
 
-    <!-- Management Insight -->
-    <div style="
-      margin-top: 20px;
-      padding: 16px 18px;
-      background: var(--slate-50);
-      border-radius: 8px;
-      border: 1px solid var(--slate-200);
-    ">
-      <div style="
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 6px;
-      ">
-        <i class="fas fa-lightbulb"
-           style="color: var(--warning-600);"></i>
 
-        <strong style="color: var(--slate-800);">
+    <!-- Management Insight -->
+
+    <div class="analytics-insight">
+
+      <div class="analytics-insight-title">
+
+        <i class="fas fa-lightbulb"></i>
+
+        <span>
           Management Insight
-        </strong>
+        </span>
+
       </div>
 
-      <p style="
-        margin: 0;
-        font-size: 13px;
-        color: var(--slate-600);
-        line-height: 1.6;
-      ">
+      <p class="analytics-insight-text">
+
         {% if pending_verification > 0 %}
-          {{ pending_verification }} application(s) currently require
-          verification attention. Officers can use the pending applications
-          section above to review documents and update application status.
+
+          {{ pending_verification }}
+          application(s) currently require verification attention.
+          Officers can use the pending applications section to
+          review documents and update application status.
+
         {% else %}
-          All submitted applications are currently up to date with
-          verification. No immediate verification backlog is present.
+
+          All submitted applications are currently up to date
+          with verification. No immediate verification backlog
+          is present.
+
         {% endif %}
+
       </p>
+
     </div>
 
   </div>
+
 </div>
